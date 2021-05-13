@@ -145,8 +145,8 @@ fn test_can_move_left() {
     );
     assert_eq!(
         rook.can_move(4, 0, &board),
-        false,
-        "Expected to not be able to move to {}, {} from {},{}",
+        true,
+        "Expected to be able to move to {}, {} from {},{}",
         4,
         0,
         4,
@@ -190,8 +190,8 @@ fn test_can_move_up() {
     );
     assert_eq!(
         rook.can_move(0, 4, &board),
-        false,
-        "Expected to not be able to move to {}, {} from {},{}",
+        true,
+        "Expected to be able to move to {}, {} from {},{}",
         0,
         4,
         4,
@@ -229,40 +229,29 @@ fn test_can_move_through_piece() {
         .insert(3, QuickPiece::PIECE(PieceColor::WHITE));
 
     assert_eq!(
-        rook.can_move(4, 5, &board),
+        rook.can_move(4, 6, &board),
         false,
-        "Expected to not be able to move through some color to {}, {} from {},{}",
-        4,
-        5,
-        4,
-        4
+        "Expected to not be able to move through same color piece at {},{}, to space {},{} from {},{}",4,5,4,6,4,4
     );
     assert_eq!(
-        rook.can_move(3, 4, &board),
+        rook.can_move(2, 4, &board),
         false,
-        "Expected to not be able to move through some color to {}, {} from {},{}",
-        3,
-        4,
-        4,
-        4
+
+        "Expected to not be able to move through same color piece at {},{}, to space {},{} from {},{}",3,4,2,4,4,4
+   );
+    assert_eq!(
+        rook.can_move(6, 4, &board),
+        false,
+
+        "Expected to not be able to move through same color piece at {},{}, to space {},{} from {},{}",5,4,6,4,4,4
+
     );
     assert_eq!(
-        rook.can_move(5, 4, &board),
+        rook.can_move(4, 2, &board),
         false,
-        "Expected to not be able to move through some color to {}, {} from {},{}",
-        5,
-        4,
-        4,
-        4
-    );
-    assert_eq!(
-        rook.can_move(4, 3, &board),
-        false,
-        "Expected to not be able to move through some color to {}, {} from {},{}",
-        4,
-        3,
-        4,
-        4
+
+        "Expected to not be able to move through same color piece at {},{}, to space {},{} from {},{}",4,3,4,2,4,4
+
     );
 
     board.get_mut(4).unwrap().remove(5);
@@ -290,40 +279,31 @@ fn test_can_move_through_piece() {
         .insert(3, QuickPiece::PIECE(PieceColor::BLACK));
 
     assert_eq!(
-        rook.can_move(4, 5, &board),
+        rook.can_move(4, 6, &board),
         false,
-        "Expected to not be able to move through opposing color to {}, {} from {},{}",
-        4,
-        5,
-        4,
-        4
+        "Expected to not be able to move through opposing color piece at {},{}, to space {},{} from {},{}",4,5,4,6,4,4
+
     );
     assert_eq!(
-        rook.can_move(3, 4, &board),
+        rook.can_move(2, 4, &board),
         false,
-        "Expected to not be able to move through opposing color to {}, {} from {},{}",
-        3,
-        4,
-        4,
-        4
+
+        "Expected to not be able to move through opposing color piece at {},{}, to space {},{} from {},{}",3,4,4,6,4,4
+
     );
     assert_eq!(
-        rook.can_move(5, 4, &board),
+        rook.can_move(6, 4, &board),
         false,
-        "Expected to not be able to move through opposing color to {}, {} from {},{}",
-        5,
-        4,
-        4,
-        4
+
+        "Expected to not be able to move through opposing color piece at {},{}, to space {},{} from {},{}",5,4,6,4,4,4
+
     );
     assert_eq!(
-        rook.can_move(4, 3, &board),
+        rook.can_move(4, 2, &board),
         false,
-        "Expected to not be able to move through opposing color to {}, {} from {},{}",
-        4,
-        3,
-        4,
-        4
+
+        "Expected to not be able to move through opposing color piece at {},{}, to space {},{} from {},{}",4,3,4,2,4,4
+
     );
 }
 
@@ -424,36 +404,36 @@ fn test_can_move_capture_opposing_color() {
         .insert(3, QuickPiece::PIECE(PieceColor::WHITE));
 
     assert_eq!(
-        false,
         rook.can_move(4, 5, &board),
-        "Expected to not capture same color piece at {},{} from {},{}",
+        true,
+        "Expected to capture opposing color piece at {},{} from {},{}",
         4,
         5,
         4,
         4
     );
     assert_eq!(
-        false,
         rook.can_move(3, 4, &board),
-        "Expected to not capture same color piece at {},{} from {},{}",
+        true,
+        "Expected to capture opposing color piece at {},{} from {},{}",
         3,
         4,
         4,
         4
     );
     assert_eq!(
-        false,
         rook.can_move(5, 4, &board),
-        "Expected to not capture same color piece at {},{} from {},{}",
+        true,
+        "Expected to capture opposing color piece at {},{} from {},{}",
         5,
         4,
         4,
         4
     );
     assert_eq!(
-        false,
         rook.can_move(4, 3, &board),
-        "Expected to not capture same color piece at {},{} from {},{}",
+        true,
+        "Expected to capture opposing color piece at {},{} from {},{}",
         4,
         3,
         4,

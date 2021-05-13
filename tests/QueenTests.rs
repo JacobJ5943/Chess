@@ -199,7 +199,7 @@ fn test_can_move_lower_left() {
     );
 }
 #[test]
-fn test_can_move_through_piece_cross() {
+fn test_can_move_through_piece() {
     let mut board = common::create_board_with_piece(4, 4, QuickPiece::PIECE(PieceColor::WHITE));
     let queen = Queen::new(4, 4, PieceColor::WHITE);
     // @TODO This should be replaced with an actual insertion function.  probably when I add the actual function impls to Board.rs
@@ -228,40 +228,29 @@ fn test_can_move_through_piece_cross() {
         .insert(3, QuickPiece::PIECE(PieceColor::WHITE));
 
     assert_eq!(
-        queen.can_move(4, 5, &board),
+        queen.can_move(4, 6, &board),
         false,
-        "Expected to not be able to move through some color to {}, {} from {},{}",
-        4,
-        5,
-        4,
-        4
+        "Expected to not be able to move through same color piece at {},{}, to space {},{} from {},{}",4,5,4,6,4,4
     );
     assert_eq!(
-        queen.can_move(3, 4, &board),
+        queen.can_move(2, 4, &board),
         false,
-        "Expected to not be able to move through some color to {}, {} from {},{}",
-        3,
-        4,
-        4,
-        4
+
+        "Expected to not be able to move through same color piece at {},{}, to space {},{} from {},{}",3,4,2,4,4,4
     );
     assert_eq!(
-        queen.can_move(5, 4, &board),
+        queen.can_move(6, 4, &board),
         false,
-        "Expected to not be able to move through some color to {}, {} from {},{}",
-        5,
-        4,
-        4,
-        4
+
+        "Expected to not be able to move through same color piece at {},{}, to space {},{} from {},{}",5,4,6,4,4,4
+
     );
     assert_eq!(
-        queen.can_move(4, 3, &board),
+        queen.can_move(4, 2, &board),
         false,
-        "Expected to not be able to move through some color to {}, {} from {},{}",
-        4,
-        3,
-        4,
-        4
+
+        "Expected to not be able to move through same color piece at {},{}, to space {},{} from {},{}",4,3,4,2,4,4
+
     );
 
     board.get_mut(4).unwrap().remove(5);
@@ -289,40 +278,31 @@ fn test_can_move_through_piece_cross() {
         .insert(3, QuickPiece::PIECE(PieceColor::BLACK));
 
     assert_eq!(
-        queen.can_move(4, 5, &board),
+        queen.can_move(4, 6, &board),
         false,
-        "Expected to not be able to move through opposing color to {}, {} from {},{}",
-        4,
-        5,
-        4,
-        4
+        "Expected to not be able to move through opposing color piece at {},{}, to space {},{} from {},{}",4,5,4,6,4,4
+
     );
     assert_eq!(
-        queen.can_move(3, 4, &board),
+        queen.can_move(2, 4, &board),
         false,
-        "Expected to not be able to move through opposing color to {}, {} from {},{}",
-        3,
-        4,
-        4,
-        4
+
+        "Expected to not be able to move through opposing color piece at {},{}, to space {},{} from {},{}",3,4,4,6,4,4
+
     );
     assert_eq!(
-        queen.can_move(5, 4, &board),
+        queen.can_move(6, 4, &board),
         false,
-        "Expected to not be able to move through opposing color to {}, {} from {},{}",
-        5,
-        4,
-        4,
-        4
+
+        "Expected to not be able to move through opposing color piece at {},{}, to space {},{} from {},{}",5,4,6,4,4,4
+
     );
     assert_eq!(
-        queen.can_move(4, 3, &board),
+        queen.can_move(4, 2, &board),
         false,
-        "Expected to not be able to move through opposing color to {}, {} from {},{}",
-        4,
-        3,
-        4,
-        4
+
+        "Expected to not be able to move through opposing color piece at {},{}, to space {},{} from {},{}",4,3,4,2,4,4
+
     );
 }
 
@@ -685,36 +665,36 @@ fn test_can_move_capture_opposing_color_diag() {
         .insert(5, QuickPiece::PIECE(PieceColor::WHITE));
 
     assert_eq!(
-        false,
         queen.can_move(5, 5, &board),
-        "Expected to not capture same color piece at {},{} from {},{}",
+        true,
+        "Expected to capture opposing color piece at {},{} from {},{}",
         5,
         5,
         4,
         4
     );
     assert_eq!(
-        false,
         queen.can_move(3, 3, &board),
-        "Expected to not capture same color piece at {},{} from {},{}",
+        true,
+        "Expected to capture opposing color piece at {},{} from {},{}",
         3,
         3,
         4,
         4
     );
     assert_eq!(
-        false,
         queen.can_move(5, 3, &board),
-        "Expected to not capture same color piece at {},{} from {},{}",
+        true,
+        "Expected to capture opposing color piece at {},{} from {},{}",
         5,
         3,
         4,
         4
     );
     assert_eq!(
-        false,
         queen.can_move(3, 5, &board),
-        "Expected to not capture same color piece at {},{} from {},{}",
+        true,
+        "Expected to capture opposing color piece at {},{} from {},{}",
         3,
         5,
         4,
