@@ -5,8 +5,9 @@ pub enum QuickPiece {
     KING(PieceColor),
 }
 
-#[derive(Debug)]
+#[derive(Debug, PartialEq)]
 pub enum PieceColor {
     WHITE,
     BLACK,
 }
+

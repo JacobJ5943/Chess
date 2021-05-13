@@ -424,36 +424,36 @@ fn test_can_move_capture_opposing_color() {
         .insert(5, QuickPiece::PIECE(PieceColor::WHITE));
 
     assert_eq!(
-        false,
         bishop.can_move(5, 5, &board),
-        "Expected to not capture same color piece at {},{} from {},{}",
+        true,
+        "Expected to capture opposing color piece at {},{} from {},{}",
         5,
         5,
         4,
         4
     );
     assert_eq!(
-        false,
         bishop.can_move(3, 3, &board),
-        "Expected to not capture same color piece at {},{} from {},{}",
+        true,
+        "Expected to capture opposing color piece at {},{} from {},{}",
         3,
         3,
         4,
         4
     );
     assert_eq!(
-        false,
         bishop.can_move(5, 3, &board),
-        "Expected to not capture same color piece at {},{} from {},{}",
+        true,
+        "Expected to capture opposing color piece at {},{} from {},{}",
         5,
         3,
         4,
         4
     );
     assert_eq!(
-        false,
         bishop.can_move(3, 5, &board),
-        "Expected to not capture same color piece at {},{} from {},{}",
+        true,
+        "Expected to capture opposing color piece at {},{} from {},{}",
         3,
         5,
         4,
