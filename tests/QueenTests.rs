@@ -190,8 +190,8 @@ fn test_can_move_lower_left() {
     );
     assert_eq!(
         queen.can_move(0, 0, &board),
-        false,
-        "Expected to not be able to move to {}, {} from {},{}",
+        true,
+        "Expected to be able to move to {}, {} from {},{}",
         0,
         0,
         4,
@@ -827,8 +827,8 @@ fn test_can_move_left() {
     );
     assert_eq!(
         queen.can_move(4, 0, &board),
-        false,
-        "Expected to not be able to move to {}, {} from {},{}",
+        true,
+        "Expected to be able to move to {}, {} from {},{}",
         4,
         0,
         4,
@@ -872,8 +872,8 @@ fn test_can_move_up() {
     );
     assert_eq!(
         queen.can_move(0, 4, &board),
-        false,
-        "Expected to not be able to move to {}, {} from {},{}",
+        true,
+        "Expected to be able to move to {}, {} from {},{}",
         0,
         4,
         4,
