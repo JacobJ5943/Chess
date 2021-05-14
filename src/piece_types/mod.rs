@@ -10,4 +10,3 @@ pub enum PieceColor {
     WHITE,
     BLACK,
 }
-

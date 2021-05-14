@@ -131,7 +131,7 @@ fn test_can_move_up() {
 fn test_can_move_capture_same_color() {
     let mut board = common::create_board_with_piece(4, 4, QuickPiece::PIECE(PieceColor::WHITE));
     let king = King::new(4, 4, PieceColor::WHITE);
-    // @TODO This should be replaced with an actual insertion function.  probably when I add the actual function impls to Board.rs
+    // @TODO This should be replaced with an actual insertion function.  probably when I add the actual function impls to board
     board.get_mut(4).unwrap().remove(5);
     board
         .get_mut(4)
@@ -198,7 +198,7 @@ fn test_can_move_capture_same_color() {
 fn test_can_move_capture_opposing_color() {
     let mut board = common::create_board_with_piece(4, 4, QuickPiece::PIECE(PieceColor::BLACK));
     let king = King::new(4, 4, PieceColor::BLACK);
-    // @TODO This should be replaced with an actual insertion function.  probably when I add the actual function impls to Board.rs
+    // @TODO This should be replaced with an actual insertion function.  probably when I add the actual function impls to board
     board.get_mut(4).unwrap().remove(5);
     board
         .get_mut(4)

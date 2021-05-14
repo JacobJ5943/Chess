@@ -202,7 +202,7 @@ fn test_can_move_lower_left() {
 fn test_can_move_through_piece() {
     let mut board = common::create_board_with_piece(4, 4, QuickPiece::PIECE(PieceColor::WHITE));
     let queen = Queen::new(4, 4, PieceColor::WHITE);
-    // @TODO This should be replaced with an actual insertion function.  probably when I add the actual function impls to Board.rs
+    // @TODO This should be replaced with an actual insertion function.  probably when I add the actual function impls to board
     board.get_mut(4).unwrap().remove(5);
     board
         .get_mut(4)
@@ -310,7 +310,7 @@ fn test_can_move_through_piece() {
 fn test_can_move_through_piece_diag() {
     let mut board = common::create_board_with_piece(4, 4, QuickPiece::PIECE(PieceColor::WHITE));
     let queen = Queen::new(4, 4, PieceColor::WHITE);
-    // @TODO This should be replaced with an actual insertion function.  probably when I add the actual function impls to Board.rs
+    // @TODO This should be replaced with an actual insertion function.  probably when I add the actual function impls to board
     board.get_mut(5).unwrap().remove(5);
     board
         .get_mut(5)
@@ -438,7 +438,7 @@ fn test_can_move_through_piece_diag() {
 fn test_can_move_capture_same_color_diag() {
     let mut board = common::create_board_with_piece(4, 4, QuickPiece::PIECE(PieceColor::WHITE));
     let queen = Queen::new(4, 4, PieceColor::WHITE);
-    // @TODO This should be replaced with an actual insertion function.  probably when I add the actual function impls to Board.rs
+    // @TODO This should be replaced with an actual insertion function.  probably when I add the actual function impls to board
     board.get_mut(5).unwrap().remove(5);
     board
         .get_mut(5)
@@ -639,7 +639,7 @@ fn test_can_move_capture_opposing_color_cross() {
 fn test_can_move_capture_opposing_color_diag() {
     let mut board = common::create_board_with_piece(4, 4, QuickPiece::PIECE(PieceColor::BLACK));
     let queen = Queen::new(4, 4, PieceColor::BLACK);
-    // @TODO This should be replaced with an actual insertion function.  probably when I add the actual function impls to Board.rs
+    // @TODO This should be replaced with an actual insertion function.  probably when I add the actual function impls to board
     board.get_mut(5).unwrap().remove(5);
     board
         .get_mut(5)
