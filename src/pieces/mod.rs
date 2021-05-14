@@ -1,10 +1,10 @@
 pub mod bishop;
 pub mod king;
 pub mod knight;
+mod movement;
 pub mod pawn;
 pub mod queen;
 pub mod rook;
-mod movement;
 
 use super::piece_types;
 use crate::piece_types::QuickPiece;

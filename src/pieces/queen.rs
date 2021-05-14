@@ -1,7 +1,7 @@
 use crate::piece_types::PieceColor;
 use crate::piece_types::QuickPiece;
-use crate::pieces::PieceMove;
 use crate::pieces::movement;
+use crate::pieces::PieceMove;
 use crate::pieces::{check_if_piece_on_location, coord_on_board};
 
 pub struct Queen {
@@ -30,18 +30,35 @@ impl PieceMove for Queen {
             return false;
         }
 
-        if movement::is_move_diagonal(self.pos_x,self.pos_y,x_coord, y_coord, quick_board) {
-            if movement::check_if_pieces_in_path_diag(self.pos_x, self.pos_y, x_coord, y_coord, quick_board) {
+        if movement::is_move_diagonal(self.pos_x, self.pos_y, x_coord, y_coord, quick_board) {
+            if movement::check_if_pieces_in_path_diag(
+                self.pos_x,
+                self.pos_y,
+                x_coord,
+                y_coord,
+                quick_board,
+            ) {
                 return false;
             }
-        } else if movement::is_move_horizontal_vertical(self.pos_x,self.pos_y,x_coord, y_coord, quick_board) {
-            if movement::check_if_pieces_in_path_horizontal_vertical(self.pos_x, self.pos_y, x_coord, y_coord, quick_board) {
+        } else if movement::is_move_horizontal_vertical(
+            self.pos_x,
+            self.pos_y,
+            x_coord,
+            y_coord,
+            quick_board,
+        ) {
+            if movement::check_if_pieces_in_path_horizontal_vertical(
+                self.pos_x,
+                self.pos_y,
+                x_coord,
+                y_coord,
+                quick_board,
+            ) {
                 return false;
             }
         } else {
             return false;
         }
-
 
         let mut piece_on_location_result = true;
         // @TODO this check could be refactored out so there is less doubling of work

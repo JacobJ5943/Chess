@@ -1,7 +1,7 @@
 use super::super::piece_types::{PieceColor, QuickPiece};
 use super::PieceMove;
-use crate::pieces::{check_if_piece_on_location, coord_on_board};
 use crate::pieces::movement;
+use crate::pieces::{check_if_piece_on_location, coord_on_board};
 
 pub struct Rook {
     pos_x: usize,
@@ -17,7 +17,6 @@ impl Rook {
             piece_color,
         }
     }
-
 }
 
 impl PieceMove for Rook {
@@ -26,7 +25,13 @@ impl PieceMove for Rook {
             return false;
         }
 
-        if !movement::is_move_horizontal_vertical(self.pos_x, self.pos_y,x_coord, y_coord, quick_board) {
+        if !movement::is_move_horizontal_vertical(
+            self.pos_x,
+            self.pos_y,
+            x_coord,
+            y_coord,
+            quick_board,
+        ) {
             return false;
         }
 
@@ -34,7 +39,13 @@ impl PieceMove for Rook {
         // Check if there are pieces in the way
 
         // Checking if pieces are in the path must be done before
-        if movement::check_if_pieces_in_path_horizontal_vertical(self.pos_x, self.pos_y, x_coord, y_coord, quick_board) {
+        if movement::check_if_pieces_in_path_horizontal_vertical(
+            self.pos_x,
+            self.pos_y,
+            x_coord,
+            y_coord,
+            quick_board,
+        ) {
             return false;
         }
 

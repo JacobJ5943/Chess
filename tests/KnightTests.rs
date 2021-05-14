@@ -40,7 +40,7 @@ fn test_can_move_upper_right() {
         knight.can_move(2, 6, &board),
         false,
         "Expected to not be able to move to {}, {} from {},{}",
-        3,
+        2,
         6,
         4,
         4
@@ -167,7 +167,7 @@ fn test_can_move_upper_left() {
         true,
         "Expected to be able to move to {}, {} from {},{}",
         3,
-        3,
+        2,
         4,
         4
     );
@@ -176,16 +176,16 @@ fn test_can_move_upper_left() {
         true,
         "Expected to be able to move to {}, {} from {},{}",
         2,
-        2,
+        3,
         4,
         4
     );
     assert_eq!(
         knight.can_move(3, 3, &board),
-        true,
-        "Expected to be able to move to {}, {} from {},{}",
-        1,
-        1,
+        false,
+        "Expected to not be able to move to {}, {} from {},{}",
+        3,
+        3,
         4,
         4
     );
@@ -193,8 +193,8 @@ fn test_can_move_upper_left() {
         knight.can_move(2, 2, &board),
         false,
         "Expected to not be able to move to {}, {} from {},{}",
-        -1,
-        -1,
+        2,
+        2,
         4,
         4
     );

@@ -1,5 +1,5 @@
 use super::super::piece_types::{PieceColor, QuickPiece};
-use super::super::pieces::{coord_on_board, check_if_piece_on_location};
+use super::super::pieces::{check_if_piece_on_location, coord_on_board};
 use super::PieceMove;
 
 pub struct King {
@@ -27,17 +27,16 @@ impl PieceMove for King {
         let y_delta = usize::max(y_coord, self.pos_y) - usize::min(y_coord, self.pos_y);
 
         if x_delta > 1 || y_delta > 1 {
-            return false
+            return false;
         }
 
         if x_delta == 1 && y_delta == 1 {
-            return false
+            return false;
         }
 
         if x_delta == 0 && y_delta == 0 {
-            return false
+            return false;
         }
-
 
         let mut piece_on_location_result = true;
         // @TODO this check could be refactored out so there is less doubling of work
@@ -50,7 +49,6 @@ impl PieceMove for King {
             };
         }
         piece_on_location_result
-
     }
 
     fn moves_on_board(&self) -> Vec<(usize, usize)> {

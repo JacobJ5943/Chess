@@ -1,7 +1,6 @@
 use crate::piece_types::QuickPiece;
 use crate::pieces::check_if_piece_on_location;
 
-
 /// This function should return  true if there are any pieces in the path to the final location.
 /// This does NOT include the final location
 /// This function assumes that the path it's going to is a valid location for a bishop
@@ -65,11 +64,9 @@ pub fn is_move_diagonal(
     x_delta != 0 && x_delta == y_delta
 }
 
-
-
 pub fn is_move_horizontal_vertical(
-    x_start:usize,
-    y_start:usize,
+    x_start: usize,
+    y_start: usize,
     x_coord: usize,
     y_coord: usize,
     quick_board: &Vec<Vec<QuickPiece>>,
@@ -85,8 +82,8 @@ pub fn is_move_horizontal_vertical(
 /// This does NOT include the final location
 /// This function assumes that the path it's going to is a valid location for a bishop
 pub fn check_if_pieces_in_path_horizontal_vertical(
-    x_start:usize,
-    y_start:usize,
+    x_start: usize,
+    y_start: usize,
     x_coord: usize,
     y_coord: usize,
     quick_board: &Vec<Vec<QuickPiece>>,

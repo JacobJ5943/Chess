@@ -17,8 +17,6 @@ impl Bishop {
             piece_color,
         }
     }
-
-
 }
 
 impl PieceMove for Bishop {
@@ -28,7 +26,7 @@ impl PieceMove for Bishop {
             return false;
         }
 
-        if !movement::is_move_diagonal(self.pos_x,self.pos_y,x_coord, y_coord, quick_board) {
+        if !movement::is_move_diagonal(self.pos_x, self.pos_y, x_coord, y_coord, quick_board) {
             return false;
         }
 
@@ -36,7 +34,13 @@ impl PieceMove for Bishop {
         // Check if there are pieces in the way
 
         // Checking if pieces are in the path must be done before
-        if movement::check_if_pieces_in_path_diag(self.pos_x, self.pos_y, x_coord, y_coord, quick_board) {
+        if movement::check_if_pieces_in_path_diag(
+            self.pos_x,
+            self.pos_y,
+            x_coord,
+            y_coord,
+            quick_board,
+        ) {
             return false;
         }
 
