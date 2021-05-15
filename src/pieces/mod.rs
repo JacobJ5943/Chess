@@ -8,6 +8,12 @@ pub mod rook;
 
 use super::piece_types;
 use crate::piece_types::QuickPiece;
+use crate::pieces::king::King;
+use crate::pieces::queen::Queen;
+use crate::pieces::bishop::Bishop;
+use crate::pieces::rook::Rook;
+use crate::pieces::knight::Knight;
+use crate::pieces::pawn::Pawn;
 
 // Calling it PieceMove because I don't want to bother with if Move is already a trait or something
 // silly
@@ -19,6 +25,39 @@ pub trait PieceMove {
         quick_board: &Vec<Vec<piece_types::QuickPiece>>,
     ) -> bool;
     fn moves_on_board(&self) -> Vec<(usize, usize)>;
+}
+
+pub enum AnyPiece {
+    King(King),
+    Queen(Queen),
+    Bishop(Bishop),
+    Knight(Knight),
+    Rook(Rook),
+    Pawn(Pawn)
+}
+
+impl PieceMove for AnyPiece {
+    fn can_move(&self, x_coord: usize, y_coord: usize, quick_board: &Vec<Vec<QuickPiece>>) -> bool {
+        match self {
+           AnyPiece::King(ref king)  => king.can_move(x_coord,y_coord,quick_board),
+            AnyPiece::Queen(ref queen)  => queen.can_move(x_coord,y_coord,quick_board),
+            AnyPiece::Bishop(ref bishop)  => bishop.can_move(x_coord,y_coord,quick_board),
+            AnyPiece::Knight(ref knight)  => knight.can_move(x_coord,y_coord,quick_board),
+            AnyPiece::Rook(ref rook)  => rook.can_move(x_coord,y_coord,quick_board),
+            AnyPiece::Pawn(ref pawn)  => pawn.can_move(x_coord,y_coord,quick_board),
+        }
+    }
+
+    fn moves_on_board(&self) -> Vec<(usize, usize)> {
+        match self {
+            AnyPiece::King(ref king)  => king.moves_on_board(),
+            AnyPiece::Queen(ref queen)  => queen.moves_on_board(),
+            AnyPiece::Bishop(ref bishop)  => bishop.moves_on_board(),
+            AnyPiece::Knight(ref knight)  => knight.moves_on_board(),
+            AnyPiece::Rook(ref rook)  => rook.moves_on_board(),
+            AnyPiece::Pawn(ref pawn)  => pawn.moves_on_board()
+        }
+    }
 }
 
 pub fn coord_on_board(

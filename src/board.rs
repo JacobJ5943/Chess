@@ -1,10 +1,11 @@
 use crate::piece_types::{PieceColor, QuickPiece};
 use crate::pieces;
+use crate::pieces::AnyPiece;
 
 pub struct Board {
     pub position_board: Vec<Vec<QuickPiece>>,
-    pub live_white_pieces: Vec<Box<dyn pieces::PieceMove>>,
-    pub live_black_pieces: Vec<Box<dyn pieces::PieceMove>>,
+    pub live_white_pieces: Vec<AnyPiece>,
+    pub live_black_pieces: Vec<AnyPiece>,
     pub white_king_position: (usize, usize),
     pub black_king_position: (usize, usize),
 }
