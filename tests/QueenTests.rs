@@ -203,14 +203,14 @@ fn test_can_move_through_piece() {
     let mut board = common::create_board_with_piece(4, 4, QuickPiece::PIECE(PieceColor::WHITE));
     let queen = Queen::new(4, 4, PieceColor::WHITE);
 
-    common::insert_quick_piece_into_board(QuickPiece::PIECE(PieceColor::WHITE),4,4,&mut board);
+    common::insert_quick_piece_into_board(QuickPiece::PIECE(PieceColor::WHITE), 4, 4, &mut board);
 
-    common::insert_quick_piece_into_board(QuickPiece::PIECE(PieceColor::WHITE),4,5,&mut board);
-    common::insert_quick_piece_into_board(QuickPiece::PIECE(PieceColor::WHITE),3,4,&mut board);
-    common::insert_quick_piece_into_board(QuickPiece::PIECE(PieceColor::WHITE),5,4,&mut board);
-    common::insert_quick_piece_into_board(QuickPiece::PIECE(PieceColor::WHITE),4,3,&mut board);
+    common::insert_quick_piece_into_board(QuickPiece::PIECE(PieceColor::WHITE), 4, 5, &mut board);
+    common::insert_quick_piece_into_board(QuickPiece::PIECE(PieceColor::WHITE), 3, 4, &mut board);
+    common::insert_quick_piece_into_board(QuickPiece::PIECE(PieceColor::WHITE), 5, 4, &mut board);
+    common::insert_quick_piece_into_board(QuickPiece::PIECE(PieceColor::WHITE), 4, 3, &mut board);
 
-assert_eq!(
+    assert_eq!(
         queen.can_move(4, 6, &board),
         false,
         "Expected to not be able to move through same color piece at {},{}, to space {},{} from {},{}",4,5,4,6,4,4
@@ -236,10 +236,10 @@ assert_eq!(
 
     );
 
-    common::insert_quick_piece_into_board(QuickPiece::PIECE(PieceColor::BLACK),4,5,&mut board);
-    common::insert_quick_piece_into_board(QuickPiece::PIECE(PieceColor::BLACK),3,4,&mut board);
-    common::insert_quick_piece_into_board(QuickPiece::PIECE(PieceColor::BLACK),5,4,&mut board);
-    common::insert_quick_piece_into_board(QuickPiece::PIECE(PieceColor::BLACK),4,3,&mut board);
+    common::insert_quick_piece_into_board(QuickPiece::PIECE(PieceColor::BLACK), 4, 5, &mut board);
+    common::insert_quick_piece_into_board(QuickPiece::PIECE(PieceColor::BLACK), 3, 4, &mut board);
+    common::insert_quick_piece_into_board(QuickPiece::PIECE(PieceColor::BLACK), 5, 4, &mut board);
+    common::insert_quick_piece_into_board(QuickPiece::PIECE(PieceColor::BLACK), 4, 3, &mut board);
 
     assert_eq!(
         queen.can_move(4, 6, &board),
@@ -275,10 +275,10 @@ fn test_can_move_through_piece_diag() {
     let mut board = common::create_board_with_piece(4, 4, QuickPiece::PIECE(PieceColor::WHITE));
     let queen = Queen::new(4, 4, PieceColor::WHITE);
 
-    common::insert_quick_piece_into_board(QuickPiece::PIECE(PieceColor::WHITE),5,5,&mut board);
-    common::insert_quick_piece_into_board(QuickPiece::PIECE(PieceColor::WHITE),3,3,&mut board);
-    common::insert_quick_piece_into_board(QuickPiece::PIECE(PieceColor::WHITE),5,3,&mut board);
-    common::insert_quick_piece_into_board(QuickPiece::PIECE(PieceColor::WHITE),3,5,&mut board);
+    common::insert_quick_piece_into_board(QuickPiece::PIECE(PieceColor::WHITE), 5, 5, &mut board);
+    common::insert_quick_piece_into_board(QuickPiece::PIECE(PieceColor::WHITE), 3, 3, &mut board);
+    common::insert_quick_piece_into_board(QuickPiece::PIECE(PieceColor::WHITE), 5, 3, &mut board);
+    common::insert_quick_piece_into_board(QuickPiece::PIECE(PieceColor::WHITE), 3, 5, &mut board);
 
     assert_eq!(
         queen.can_move(6, 6, &board),
@@ -317,10 +317,10 @@ fn test_can_move_through_piece_diag() {
         4
     );
 
-    common::insert_quick_piece_into_board(QuickPiece::PIECE(PieceColor::BLACK),5,5,&mut board);
-    common::insert_quick_piece_into_board(QuickPiece::PIECE(PieceColor::BLACK),3,3,&mut board);
-    common::insert_quick_piece_into_board(QuickPiece::PIECE(PieceColor::BLACK),5,3,&mut board);
-    common::insert_quick_piece_into_board(QuickPiece::PIECE(PieceColor::BLACK),3,5,&mut board);
+    common::insert_quick_piece_into_board(QuickPiece::PIECE(PieceColor::BLACK), 5, 5, &mut board);
+    common::insert_quick_piece_into_board(QuickPiece::PIECE(PieceColor::BLACK), 3, 3, &mut board);
+    common::insert_quick_piece_into_board(QuickPiece::PIECE(PieceColor::BLACK), 5, 3, &mut board);
+    common::insert_quick_piece_into_board(QuickPiece::PIECE(PieceColor::BLACK), 3, 5, &mut board);
 
     assert_eq!(
         queen.can_move(6, 6, &board),
@@ -365,10 +365,10 @@ fn test_can_move_capture_same_color_diag() {
     let mut board = common::create_board_with_piece(4, 4, QuickPiece::PIECE(PieceColor::WHITE));
     let queen = Queen::new(4, 4, PieceColor::WHITE);
 
-    common::insert_quick_piece_into_board(QuickPiece::PIECE(PieceColor::WHITE),5,5,&mut board);
-    common::insert_quick_piece_into_board(QuickPiece::PIECE(PieceColor::WHITE),3,3,&mut board);
-    common::insert_quick_piece_into_board(QuickPiece::PIECE(PieceColor::WHITE),5,3,&mut board);
-    common::insert_quick_piece_into_board(QuickPiece::PIECE(PieceColor::WHITE),3,5,&mut board);
+    common::insert_quick_piece_into_board(QuickPiece::PIECE(PieceColor::WHITE), 5, 5, &mut board);
+    common::insert_quick_piece_into_board(QuickPiece::PIECE(PieceColor::WHITE), 3, 3, &mut board);
+    common::insert_quick_piece_into_board(QuickPiece::PIECE(PieceColor::WHITE), 5, 3, &mut board);
+    common::insert_quick_piece_into_board(QuickPiece::PIECE(PieceColor::WHITE), 3, 5, &mut board);
 
     assert_eq!(
         queen.can_move(5, 5, &board),
@@ -413,10 +413,10 @@ fn test_can_move_capture_same_color_cross() {
     let mut board = common::create_board_with_piece(4, 4, QuickPiece::PIECE(PieceColor::WHITE));
     let queen = Queen::new(4, 4, PieceColor::WHITE);
 
-    common::insert_quick_piece_into_board(QuickPiece::PIECE(PieceColor::WHITE),4,5,&mut board);
-    common::insert_quick_piece_into_board(QuickPiece::PIECE(PieceColor::WHITE),3,4,&mut board);
-    common::insert_quick_piece_into_board(QuickPiece::PIECE(PieceColor::WHITE),5,4,&mut board);
-    common::insert_quick_piece_into_board(QuickPiece::PIECE(PieceColor::WHITE),4,3,&mut board);
+    common::insert_quick_piece_into_board(QuickPiece::PIECE(PieceColor::WHITE), 4, 5, &mut board);
+    common::insert_quick_piece_into_board(QuickPiece::PIECE(PieceColor::WHITE), 3, 4, &mut board);
+    common::insert_quick_piece_into_board(QuickPiece::PIECE(PieceColor::WHITE), 5, 4, &mut board);
+    common::insert_quick_piece_into_board(QuickPiece::PIECE(PieceColor::WHITE), 4, 3, &mut board);
 
     assert_eq!(
         queen.can_move(4, 5, &board),
@@ -461,10 +461,10 @@ fn test_can_move_capture_opposing_color_cross() {
     let mut board = common::create_board_with_piece(4, 4, QuickPiece::PIECE(PieceColor::WHITE));
     let queen = Queen::new(4, 4, PieceColor::WHITE);
 
-    common::insert_quick_piece_into_board(QuickPiece::PIECE(PieceColor::BLACK),4,5,&mut board);
-    common::insert_quick_piece_into_board(QuickPiece::PIECE(PieceColor::BLACK),3,4,&mut board);
-    common::insert_quick_piece_into_board(QuickPiece::PIECE(PieceColor::BLACK),5,4,&mut board);
-    common::insert_quick_piece_into_board(QuickPiece::PIECE(PieceColor::BLACK),4,3,&mut board);
+    common::insert_quick_piece_into_board(QuickPiece::PIECE(PieceColor::BLACK), 4, 5, &mut board);
+    common::insert_quick_piece_into_board(QuickPiece::PIECE(PieceColor::BLACK), 3, 4, &mut board);
+    common::insert_quick_piece_into_board(QuickPiece::PIECE(PieceColor::BLACK), 5, 4, &mut board);
+    common::insert_quick_piece_into_board(QuickPiece::PIECE(PieceColor::BLACK), 4, 3, &mut board);
 
     assert_eq!(
         queen.can_move(4, 5, &board),
@@ -509,10 +509,10 @@ fn test_can_move_capture_opposing_color_diag() {
     let mut board = common::create_board_with_piece(4, 4, QuickPiece::PIECE(PieceColor::BLACK));
     let queen = Queen::new(4, 4, PieceColor::BLACK);
 
-    common::insert_quick_piece_into_board(QuickPiece::PIECE(PieceColor::WHITE),5,5,&mut board);
-    common::insert_quick_piece_into_board(QuickPiece::PIECE(PieceColor::WHITE),3,3,&mut board);
-    common::insert_quick_piece_into_board(QuickPiece::PIECE(PieceColor::WHITE),5,3,&mut board);
-    common::insert_quick_piece_into_board(QuickPiece::PIECE(PieceColor::WHITE),3,5,&mut board);
+    common::insert_quick_piece_into_board(QuickPiece::PIECE(PieceColor::WHITE), 5, 5, &mut board);
+    common::insert_quick_piece_into_board(QuickPiece::PIECE(PieceColor::WHITE), 3, 3, &mut board);
+    common::insert_quick_piece_into_board(QuickPiece::PIECE(PieceColor::WHITE), 5, 3, &mut board);
+    common::insert_quick_piece_into_board(QuickPiece::PIECE(PieceColor::WHITE), 3, 5, &mut board);
 
     assert_eq!(
         queen.can_move(5, 5, &board),

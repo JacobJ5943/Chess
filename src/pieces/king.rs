@@ -2,6 +2,7 @@ use super::super::piece_types::{PieceColor, QuickPiece};
 use super::super::pieces::{check_if_piece_on_location, coord_on_board};
 use super::PieceMove;
 
+#[derive(Copy, Clone)]
 pub struct King {
     pos_x: usize,
     pos_y: usize,
@@ -18,6 +19,15 @@ impl King {
     }
 }
 impl PieceMove for King {
+    fn get_pos(&self) -> (usize, usize) {
+        (self.pos_x, self.pos_y)
+    }
+
+    fn set_pos(&mut self, x_coord: usize, y_coord: usize) {
+        self.pos_x = x_coord;
+        self.pos_y = y_coord;
+    }
+
     fn can_move(&self, x_coord: usize, y_coord: usize, quick_board: &Vec<Vec<QuickPiece>>) -> bool {
         if !coord_on_board(x_coord, y_coord, quick_board) {
             return false;
@@ -30,14 +40,9 @@ impl PieceMove for King {
             return false;
         }
 
-        if x_delta == 1 && y_delta == 1 {
-            return false;
-        }
-
         if x_delta == 0 && y_delta == 0 {
             return false;
         }
-
         let mut piece_on_location_result = true;
         // @TODO this check could be refactored out so there is less doubling of work
         if check_if_piece_on_location(x_coord, y_coord, quick_board) {
@@ -52,7 +57,25 @@ impl PieceMove for King {
     }
 
     fn moves_on_board(&self) -> Vec<(usize, usize)> {
-        // This will need access to the board of quick pieces as well.
-        Vec::new()
+        let possible_moves = vec![
+            (self.pos_x - 1, self.pos_y + 1),
+            (self.pos_x, self.pos_y + 1),
+            (self.pos_x + 1, self.pos_y + 1),
+            (self.pos_x - 1, self.pos_y),
+            (self.pos_x + 1, self.pos_y),
+            (self.pos_x - 1, self.pos_y - 1),
+            (self.pos_x, self.pos_y - 1),
+            (self.pos_x + 1, self.pos_y - 1),
+        ];
+        let mut return_moves: Vec<(usize, usize)> = Vec::new();
+        for test1 in possible_moves
+            .iter()
+            .filter(|(x, y)| *x <= 7 && *x >= 0 && *y <= 7 && *y >= 0)
+            .into_iter()
+        {
+            return_moves.push(*test1);
+        }
+
+        return_moves
     }
 }

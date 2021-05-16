@@ -4,6 +4,7 @@ use crate::pieces::coord_on_board;
 use crate::pieces::PieceMove;
 use std::cmp::max;
 
+#[derive(Copy, Clone)]
 pub struct Pawn {
     pos_x: usize,
     pos_y: usize,
@@ -48,6 +49,13 @@ impl Pawn {
     }
 }
 impl PieceMove for Pawn {
+    fn get_pos(&self) -> (usize, usize) {
+        (self.pos_x, self.pos_y)
+    }
+    fn set_pos(&mut self, x_coord: usize, y_coord: usize) {
+        self.pos_x = x_coord;
+        self.pos_y = y_coord;
+    }
     fn can_move(&self, x_coord: usize, y_coord: usize, quick_board: &Vec<Vec<QuickPiece>>) -> bool {
         // A pawn can move forward left, forward right, forward
         if !coord_on_board(x_coord, y_coord, quick_board) {
