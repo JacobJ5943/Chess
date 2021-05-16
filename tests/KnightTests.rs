@@ -205,12 +205,8 @@ fn test_can_move_upper_left() {
 fn test_can_move_capture_same_color() {
     let mut board = common::create_board_with_piece(4, 4, QuickPiece::PIECE(PieceColor::WHITE));
     let knight = Knight::new(4, 4, PieceColor::WHITE);
-    board.get_mut(5).unwrap().remove(6);
-    board
-        .get_mut(5)
-        .unwrap()
-        .insert(6, QuickPiece::PIECE(PieceColor::WHITE));
-
+    common::insert_quick_piece_into_board(QuickPiece::PIECE(PieceColor::WHITE), 4, 4, &mut board);
+    common::insert_quick_piece_into_board(QuickPiece::PIECE(PieceColor::WHITE), 5, 6, &mut board);
     assert_eq!(
         knight.can_move(5, 6, &board),
         false,
@@ -226,11 +222,9 @@ fn test_can_move_capture_same_color() {
 fn test_can_move_capture_opposing_color() {
     let mut board = common::create_board_with_piece(4, 4, QuickPiece::PIECE(PieceColor::WHITE));
     let knight = Knight::new(4, 4, PieceColor::WHITE);
-    board.get_mut(5).unwrap().remove(6);
-    board
-        .get_mut(5)
-        .unwrap()
-        .insert(6, QuickPiece::PIECE(PieceColor::BLACK));
+
+    common::insert_quick_piece_into_board(QuickPiece::PIECE(PieceColor::WHITE), 4, 4, &mut board);
+    common::insert_quick_piece_into_board(QuickPiece::PIECE(PieceColor::BLACK), 5, 6, &mut board);
 
     assert_eq!(
         knight.can_move(5, 6, &board),

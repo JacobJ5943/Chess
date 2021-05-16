@@ -203,30 +203,12 @@ fn test_can_move_lower_left() {
 fn test_can_move_through_piece() {
     let mut board = common::create_board_with_piece(4, 4, QuickPiece::PIECE(PieceColor::WHITE));
     let bishop = Bishop::new(4, 4, PieceColor::WHITE);
-    // @TODO This should be replaced with an actual insertion function.  probably when I add the actual function impls to board
-    board.get_mut(5).unwrap().remove(5);
-    board
-        .get_mut(5)
-        .unwrap()
-        .insert(5, QuickPiece::PIECE(PieceColor::WHITE));
 
-    board.get_mut(3).unwrap().remove(3);
-    board
-        .get_mut(3)
-        .unwrap()
-        .insert(3, QuickPiece::PIECE(PieceColor::WHITE));
-
-    board.get_mut(5).unwrap().remove(3);
-    board
-        .get_mut(5)
-        .unwrap()
-        .insert(3, QuickPiece::PIECE(PieceColor::WHITE));
-
-    board.get_mut(3).unwrap().remove(5);
-    board
-        .get_mut(3)
-        .unwrap()
-        .insert(5, QuickPiece::PIECE(PieceColor::WHITE));
+    common::insert_quick_piece_into_board(QuickPiece::PIECE(PieceColor::WHITE),4,4,&mut board);
+    common::insert_quick_piece_into_board(QuickPiece::PIECE(PieceColor::WHITE),5,5,&mut board);
+    common::insert_quick_piece_into_board(QuickPiece::PIECE(PieceColor::WHITE),3,3,&mut board);
+    common::insert_quick_piece_into_board(QuickPiece::PIECE(PieceColor::WHITE),5,3,&mut board);
+    common::insert_quick_piece_into_board(QuickPiece::PIECE(PieceColor::WHITE),3,5,&mut board);
 
     assert_eq!(
         bishop.can_move(6, 6, &board),
@@ -265,29 +247,11 @@ fn test_can_move_through_piece() {
         4
     );
 
-    board.get_mut(5).unwrap().remove(5);
-    board
-        .get_mut(5)
-        .unwrap()
-        .insert(5, QuickPiece::PIECE(PieceColor::BLACK));
-
-    board.get_mut(3).unwrap().remove(3);
-    board
-        .get_mut(3)
-        .unwrap()
-        .insert(3, QuickPiece::PIECE(PieceColor::BLACK));
-
-    board.get_mut(5).unwrap().remove(3);
-    board
-        .get_mut(5)
-        .unwrap()
-        .insert(3, QuickPiece::PIECE(PieceColor::BLACK));
-
-    board.get_mut(3).unwrap().remove(5);
-    board
-        .get_mut(3)
-        .unwrap()
-        .insert(5, QuickPiece::PIECE(PieceColor::BLACK));
+    common::insert_quick_piece_into_board(QuickPiece::PIECE(PieceColor::BLACK),4,4,&mut board);
+    common::insert_quick_piece_into_board(QuickPiece::PIECE(PieceColor::BLACK),5,5,&mut board);
+    common::insert_quick_piece_into_board(QuickPiece::PIECE(PieceColor::BLACK),3,3,&mut board);
+    common::insert_quick_piece_into_board(QuickPiece::PIECE(PieceColor::BLACK),5,3,&mut board);
+    common::insert_quick_piece_into_board(QuickPiece::PIECE(PieceColor::BLACK),3,5,&mut board);
 
     assert_eq!(
         bishop.can_move(6, 6, &board),
@@ -331,32 +295,14 @@ fn test_can_move_through_piece() {
 fn test_can_move_capture_same_color() {
     let mut board = common::create_board_with_piece(4, 4, QuickPiece::PIECE(PieceColor::WHITE));
     let bishop = Bishop::new(4, 4, PieceColor::WHITE);
+    common::insert_quick_piece_into_board(QuickPiece::PIECE(PieceColor::WHITE),4,4,&mut board);
+    common::insert_quick_piece_into_board(QuickPiece::PIECE(PieceColor::WHITE),5,5,&mut board);
+    common::insert_quick_piece_into_board(QuickPiece::PIECE(PieceColor::WHITE),3,3,&mut board);
+    common::insert_quick_piece_into_board(QuickPiece::PIECE(PieceColor::WHITE),5,3,&mut board);
+    common::insert_quick_piece_into_board(QuickPiece::PIECE(PieceColor::WHITE),3,5,&mut board);
+
     // @TODO This should be replaced with an actual insertion function.  probably when I add the actual function impls to board
-    board.get_mut(5).unwrap().remove(5);
-    board
-        .get_mut(5)
-        .unwrap()
-        .insert(5, QuickPiece::PIECE(PieceColor::WHITE));
-
-    board.get_mut(3).unwrap().remove(3);
-    board
-        .get_mut(3)
-        .unwrap()
-        .insert(3, QuickPiece::PIECE(PieceColor::WHITE));
-
-    board.get_mut(5).unwrap().remove(3);
-    board
-        .get_mut(5)
-        .unwrap()
-        .insert(3, QuickPiece::PIECE(PieceColor::WHITE));
-
-    board.get_mut(3).unwrap().remove(5);
-    board
-        .get_mut(3)
-        .unwrap()
-        .insert(5, QuickPiece::PIECE(PieceColor::WHITE));
-
-    assert_eq!(
+   assert_eq!(
         bishop.can_move(5, 5, &board),
         false,
         "Expected to not capture same color piece at {},{} from {},{}",
@@ -399,30 +345,10 @@ fn test_can_move_capture_opposing_color() {
     let mut board = common::create_board_with_piece(4, 4, QuickPiece::PIECE(PieceColor::BLACK));
     let bishop = Bishop::new(4, 4, PieceColor::BLACK);
     // @TODO This should be replaced with an actual insertion function.  probably when I add the actual function impls to board
-    board.get_mut(5).unwrap().remove(5);
-    board
-        .get_mut(5)
-        .unwrap()
-        .insert(5, QuickPiece::PIECE(PieceColor::WHITE));
-
-    board.get_mut(3).unwrap().remove(3);
-    board
-        .get_mut(3)
-        .unwrap()
-        .insert(3, QuickPiece::PIECE(PieceColor::WHITE));
-
-    board.get_mut(5).unwrap().remove(3);
-    board
-        .get_mut(5)
-        .unwrap()
-        .insert(3, QuickPiece::PIECE(PieceColor::WHITE));
-
-    board.get_mut(3).unwrap().remove(5);
-    board
-        .get_mut(3)
-        .unwrap()
-        .insert(5, QuickPiece::PIECE(PieceColor::WHITE));
-
+    common::insert_quick_piece_into_board(QuickPiece::PIECE(PieceColor::WHITE),5,5,&mut board);
+    common::insert_quick_piece_into_board(QuickPiece::PIECE(PieceColor::WHITE),3,3,&mut board);
+    common::insert_quick_piece_into_board(QuickPiece::PIECE(PieceColor::WHITE),5,3,&mut board);
+    common::insert_quick_piece_into_board(QuickPiece::PIECE(PieceColor::WHITE),3,5,&mut board);
     assert_eq!(
         bishop.can_move(5, 5, &board),
         true,

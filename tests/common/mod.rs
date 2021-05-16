@@ -1,6 +1,62 @@
+use chess::board::Board;
 use chess::piece_types;
-use chess::piece_types::QuickPiece;
-use chess::pieces::bishop;
+use chess::piece_types::QuickPiece::PIECE;
+use chess::piece_types::{PieceColor, QuickPiece};
+use chess::pieces::{bishop, AnyPiece};
+
+/// Removes the QuickPiece that is at that given location and adds the piece to the appropriate living vector
+pub fn insert_piece_into_board(
+    piece: AnyPiece,
+    piece_color: &PieceColor,
+    x_coord: usize,
+    y_coord: usize,
+    board: &mut Board,
+) {
+    let owned_piece_color = match piece_color {
+        PieceColor::WHITE => PieceColor::WHITE,
+        PieceColor::BLACK => PieceColor::BLACK,
+    };
+
+    let quick_piece = match &piece {
+        AnyPiece::King(_) => QuickPiece::KING(owned_piece_color),
+        _ => QuickPiece::PIECE(owned_piece_color),
+    };
+
+    match &quick_piece {
+        QuickPiece::KING(color) => match color {
+            PieceColor::WHITE => board.white_king_position = (x_coord, y_coord),
+            PieceColor::BLACK => board.black_king_position = (x_coord, y_coord),
+        },
+        _ => (),
+    }
+
+    match piece_color {
+        PieceColor::WHITE => board.live_white_pieces.push(piece),
+        PieceColor::BLACK => board.live_black_pieces.push(piece),
+    }
+
+    board
+        .position_board
+        .get_mut(x_coord)
+        .unwrap()
+        .remove(y_coord);
+    board
+        .position_board
+        .get_mut(x_coord)
+        .unwrap()
+        .insert(y_coord, quick_piece);
+}
+
+// inserts a piece into the quick board and removes the piece that was there before
+pub fn insert_quick_piece_into_board(
+    piece: QuickPiece,
+    x_coord: usize,
+    y_coord: usize,
+    board: &mut Vec<Vec<QuickPiece>>,
+) {
+    board.get_mut(x_coord).unwrap().remove(y_coord);
+    board.get_mut(x_coord).unwrap().insert(y_coord, piece);
+}
 
 // @TODO maybe add checks on the x_coord or y_coord.  idk
 pub fn create_board_with_piece(

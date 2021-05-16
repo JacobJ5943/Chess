@@ -131,30 +131,11 @@ fn test_can_move_up() {
 fn test_can_move_capture_same_color() {
     let mut board = common::create_board_with_piece(4, 4, QuickPiece::PIECE(PieceColor::WHITE));
     let king = King::new(4, 4, PieceColor::WHITE);
-    // @TODO This should be replaced with an actual insertion function.  probably when I add the actual function impls to board
-    board.get_mut(4).unwrap().remove(5);
-    board
-        .get_mut(4)
-        .unwrap()
-        .insert(5, QuickPiece::PIECE(PieceColor::WHITE));
 
-    board.get_mut(3).unwrap().remove(4);
-    board
-        .get_mut(3)
-        .unwrap()
-        .insert(4, QuickPiece::PIECE(PieceColor::WHITE));
-
-    board.get_mut(5).unwrap().remove(4);
-    board
-        .get_mut(5)
-        .unwrap()
-        .insert(4, QuickPiece::PIECE(PieceColor::WHITE));
-
-    board.get_mut(4).unwrap().remove(3);
-    board
-        .get_mut(4)
-        .unwrap()
-        .insert(3, QuickPiece::PIECE(PieceColor::WHITE));
+    common::insert_quick_piece_into_board(QuickPiece::PIECE(PieceColor::WHITE),4,5,&mut board);
+    common::insert_quick_piece_into_board(QuickPiece::PIECE(PieceColor::WHITE),3,4,&mut board);
+    common::insert_quick_piece_into_board(QuickPiece::PIECE(PieceColor::WHITE),5,4,&mut board);
+    common::insert_quick_piece_into_board(QuickPiece::PIECE(PieceColor::WHITE),4,3,&mut board);
 
     assert_eq!(
         king.can_move(4, 5, &board),
@@ -198,32 +179,13 @@ fn test_can_move_capture_same_color() {
 fn test_can_move_capture_opposing_color() {
     let mut board = common::create_board_with_piece(4, 4, QuickPiece::PIECE(PieceColor::BLACK));
     let king = King::new(4, 4, PieceColor::BLACK);
-    // @TODO This should be replaced with an actual insertion function.  probably when I add the actual function impls to board
-    board.get_mut(4).unwrap().remove(5);
-    board
-        .get_mut(4)
-        .unwrap()
-        .insert(5, QuickPiece::PIECE(PieceColor::WHITE));
 
-    board.get_mut(3).unwrap().remove(4);
-    board
-        .get_mut(3)
-        .unwrap()
-        .insert(4, QuickPiece::PIECE(PieceColor::WHITE));
+    common::insert_quick_piece_into_board(QuickPiece::PIECE(PieceColor::WHITE),4,5,&mut board);
+    common::insert_quick_piece_into_board(QuickPiece::PIECE(PieceColor::WHITE),3,4,&mut board);
+    common::insert_quick_piece_into_board(QuickPiece::PIECE(PieceColor::WHITE),5,4,&mut board);
+    common::insert_quick_piece_into_board(QuickPiece::PIECE(PieceColor::WHITE),4,3,&mut board);
 
-    board.get_mut(5).unwrap().remove(4);
-    board
-        .get_mut(5)
-        .unwrap()
-        .insert(4, QuickPiece::PIECE(PieceColor::WHITE));
-
-    board.get_mut(4).unwrap().remove(3);
-    board
-        .get_mut(4)
-        .unwrap()
-        .insert(3, QuickPiece::PIECE(PieceColor::WHITE));
-
-    assert_eq!(
+   assert_eq!(
         king.can_move(4, 5, &board),
         true,
         "Expected to not capture opposing color piece at {},{} from {},{}",

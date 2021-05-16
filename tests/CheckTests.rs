@@ -4,9 +4,10 @@ use chess::board;
 use chess::game;
 use chess::piece_types::QuickPiece::PIECE;
 use chess::piece_types::{PieceColor, QuickPiece};
-use chess::pieces::{AnyPiece, PieceMove};
 use chess::pieces::king::King;
 use chess::pieces::knight::Knight;
+use chess::pieces::{AnyPiece, PieceMove};
+use std::collections::BinaryHeap;
 
 #[test]
 fn test_check_same_color() {
@@ -120,4 +121,55 @@ fn test_check_through_pieces() {
     board.black_king_position = (6, 3);
 
     assert_eq!(game::is_board_in_check(PieceColor::WHITE, &board), false, "Expected not to be able to check from {},{} through knight at {},{} to opposing king at {},{}",4,4,5,5,6,6);
+}
+
+#[test]
+
+fn will_move_be_in_check() {
+    let pos_board = common::create_board_with_piece(4, 4, QuickPiece::PIECE(PieceColor::WHITE));
+    let mut board = board::Board {
+        position_board: pos_board,
+        live_white_pieces: vec![],
+        live_black_pieces: vec![],
+        white_king_position: (0, 0),
+        black_king_position: (0, 0),
+    };
+
+    common::insert_piece_into_board(
+        AnyPiece::King(King::new(6, 6, PieceColor::WHITE)),
+        &PieceColor::WHITE,
+        6,
+        6,
+        &mut board,
+    );
+    common::insert_piece_into_board(
+        AnyPiece::Bishop(Bishop::new(6, 2, PieceColor::BLACK)),
+        &PieceColor::BLACK,
+        6,
+        2,
+        &mut board,
+    );
+
+    assert_eq!(
+        game::will_move_be_in_check(6, 2, 4, 4, &mut board),
+        true,
+        "Moving bishop from {},{} to {},{} should put king at check at {},{}",
+        6,
+        2,
+        4,
+        4,
+        6,
+        6
+    );
+    assert_eq!(
+        game::will_move_be_in_check(6, 2, 3, 3, &mut board),
+        false,
+        "Moving bishop from {},{} to {},{} should not put king at check at {},{}",
+        6,
+        2,
+        3,
+        3,
+        6,
+        6
+    );
 }
