@@ -4,13 +4,14 @@ use std::fmt;
 use std::str::Chars;
 
 #[derive(Debug, PartialEq)]
-struct ParsedMove {
-    piece_char: String,
-    starting_coords: (Option<String>, Option<String>),
-    end_coords: (String, String),
-    move_type: MoveTypes,
-    check_or_checkmate: CheckOrCheckMate,
+pub struct ParsedMove {
+    pub piece_char: String,
+    pub starting_coords: (Option<String>, Option<String>),
+    pub end_coords: (String, String),
+    pub move_type: MoveTypes,
+    pub check_or_checkmate: CheckOrCheckMate,
 }
+
 impl ParsedMove {
     pub fn new(
         piece_char: String,
@@ -30,7 +31,7 @@ impl ParsedMove {
 }
 
 #[derive(Debug)]
-struct ParseError {
+pub struct ParseError {
     details: String,
 }
 
@@ -54,20 +55,20 @@ impl Error for ParseError {
     }
 }
 #[derive(Debug, Eq, PartialEq)]
-enum MoveTypes {
+pub enum MoveTypes {
     Move,
     Take,
     Promote(String), // TODO Change this to something other than string later
 }
 
 #[derive(Debug, Eq, PartialEq)]
-enum CheckOrCheckMate {
+pub enum CheckOrCheckMate {
     Check,
     CheckMate,
     Neither,
 }
 
-fn parse_game_moves(
+pub fn parse_game_moves(
     game_string: String,
 ) -> Vec<(
     String,
@@ -85,7 +86,7 @@ fn parse_game_moves(
         .map(|x| x * 3)
         .filter(|x| *x < moves.len())
     {
-        if moves.len() - 1 > index + 2 {
+        if moves.len() - 1 < index + 2 {
             continue;
         }
 
@@ -100,7 +101,7 @@ fn parse_game_moves(
     moves_vector
 }
 
-fn parse_move(move_string: &str) -> Result<ParsedMove, ParseError> {
+pub fn parse_move(move_string: &str) -> Result<ParsedMove, ParseError> {
     let move_string = String::from(move_string);
     let mut characters = move_string.chars();
     match characters.next().unwrap() {
@@ -189,6 +190,28 @@ fn parse_piece_move(move_string: String) -> Result<ParsedMove, ParseError> {
         },
         'O' => Err(ParseError::new("CASTLE")),
         _ => Err(ParseError::new("oh no")),
+    }
+}
+
+pub fn parse_coordinate(coordinate: &str) -> usize {
+    match coordinate {
+        "a" => 0,
+        "b" => 1,
+        "c" => 2,
+        "d" => 3,
+        "e" => 4,
+        "f" => 5,
+        "g" => 6,
+        "h" => 7,
+        "1" => 0,
+        "2" => 1,
+        "3" => 2,
+        "4" => 3,
+        "5" => 4,
+        "6" => 5,
+        "7" => 6,
+        "8" => 7,
+        _ => panic!("Could nod parse {}", coordinate),
     }
 }
 
@@ -412,6 +435,7 @@ mod tests {
 
     #[test]
     fn test_parse_game() {
-        parse_game_moves("1. e4 e6 2. d4 d5 3. e5 c5 4. c3 Ne7 5. f4 Nbc6 6. Nf3 cxd4 7. cxd4 Nf5 8. g4 Nfe7 9. Nc3 Bd7 10. Bd3 Nb4 11. O-O Ng6 12. a3 Nxd3 13. Qxd3 Be7 14. f5 exf5 15. gxf5 Nf8 16. Nxd5 g5 17. f6 g4 18. fxe7 Qa5 19. exf8=Q+ Kxf8 20. Bh6+ Ke8 21. Nf6+ Ke7 22. Nd2 Be6 23. Bg5 Kf8 24. Nfe4 h6 25. Bh4 Qb6 26. Nc5 Bd5 27. b4 Rc8 28. Nd7+ Nd7+".to_string());
+        //https://lichess.org/m45sueue
+        let result = parse_game_moves("1. e4 e6 2. d4 d5 3. e5 c5 4. c3 Ne7 5. f4 Nbc6 6. Nf3 cxd4 7. cxd4 Nf5 8. g4 Nfe7 9. Nc3 Bd7 10. Bd3 Nb4 11. O-O Ng6 12. a3 Nxd3 13. Qxd3 Be7 14. f5 exf5 15. gxf5 Nf8 16. Nxd5 g5 17. f6 g4 18. fxe7 Qa5 19. exf8=Q+ Kxf8 20. Bh6+ Ke8 21. Nf6+ Ke7 22. Nd2 Be6 23. Bg5 Kf8 24. Nfe4 h6 25. Bh4 Qb6 26. Nc5 Bd5 27. b4 Rc8 28. Nd7+ Nd7+".to_string());
     }
 }

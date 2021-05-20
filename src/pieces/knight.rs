@@ -1,7 +1,7 @@
 use crate::piece_types::{PieceColor, QuickPiece};
 use crate::pieces::{check_if_piece_on_location, coord_on_board, PieceMove};
 
-#[derive(Copy, Clone)]
+#[derive(Copy, Clone, Debug)]
 pub struct Knight {
     pos_x: usize,
     pos_y: usize,

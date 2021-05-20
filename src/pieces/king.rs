@@ -2,7 +2,7 @@ use super::super::piece_types::{PieceColor, QuickPiece};
 use super::super::pieces::{check_if_piece_on_location, coord_on_board};
 use super::PieceMove;
 
-#[derive(Copy, Clone)]
+#[derive(Copy, Clone, Debug)]
 pub struct King {
     pos_x: usize,
     pos_y: usize,

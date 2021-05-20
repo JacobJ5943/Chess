@@ -4,6 +4,7 @@ use crate::pieces::{AnyPiece, PieceMove};
 
 use crate::piece_types::QuickPiece::PIECE;
 use std::borrow::{Borrow, BorrowMut};
+use std::fmt::Error;
 
 // This function only checks the color opposing the last move.  This is because one cannot make a
 // move that would put the player in check.  That means for this function to run it has already
@@ -33,6 +34,10 @@ pub fn is_board_in_check(last_move: &PieceColor, board: &Board) -> bool {
     false
 }
 
+pub fn play_move(board: &Board) -> Result<(), Error> {
+    Ok(())
+}
+
 pub fn is_board_check_mate(last_move: &PieceColor, board: &mut Board) -> bool {
     let opposing_king = match last_move {
         PieceColor::WHITE => board.black_king_position,
@@ -45,7 +50,7 @@ pub fn is_board_check_mate(last_move: &PieceColor, board: &mut Board) -> bool {
 
     if is_board_in_check(last_move, board) {
         let king = board
-            .find_piece(opposing_king.0, opposing_king.1, &opposing_king_color)
+            .find_piece_color(opposing_king.0, opposing_king.1, &opposing_king_color)
             .unwrap()
             .clone();
         let possible_moves: Vec<(usize, usize)> = king.moves_on_board();
@@ -95,11 +100,6 @@ pub fn will_move_be_in_check(
         .unwrap()
         .remove(y_start);
 
-    /*let last_move_color = match king_color_being_checked {
-        PieceColor::WHITE => PieceColor::BLACK,
-        PieceColor::BLACK => PieceColor::WHITE
-    };*/
-
     let mut living_pieces = match king_color_being_checked {
         PieceColor::WHITE => &mut board.live_black_pieces,
         PieceColor::BLACK => &mut board.live_white_pieces,
@@ -119,7 +119,7 @@ pub fn will_move_be_in_check(
         .insert(y_end, start_piece);
 
     let mut found_piece = board
-        .find_piece(x_start, y_start, &last_move_color)
+        .find_piece_color(x_start, y_start, &last_move_color)
         .unwrap();
 
     found_piece.set_pos(x_end, y_end);
@@ -160,7 +160,9 @@ pub fn will_move_be_in_check(
         .unwrap()
         .insert(y_start, start_piece);
 
-    let mut found_piece = board.find_piece(x_end, y_end, &last_move_color).unwrap();
+    let mut found_piece = board
+        .find_piece_color(x_end, y_end, &last_move_color)
+        .unwrap();
     found_piece.set_pos(x_start, y_start);
     match found_piece {
         AnyPiece::King(king) => match last_move_color {

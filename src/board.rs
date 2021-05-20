@@ -1,6 +1,15 @@
+use crate::parser::{MoveTypes, ParsedMove};
+use crate::piece_types::QuickPiece::PIECE;
 use crate::piece_types::{PieceColor, QuickPiece};
-use crate::pieces;
+use crate::pieces::bishop::Bishop;
+use crate::pieces::king::King;
+use crate::pieces::knight::Knight;
+use crate::pieces::pawn::Pawn;
+use crate::pieces::queen::Queen;
+use crate::pieces::rook::Rook;
 use crate::pieces::{AnyPiece, PieceMove};
+use crate::{parser, pieces};
+use std::any::Any;
 
 pub struct Board {
     pub position_board: Vec<Vec<QuickPiece>>,
@@ -8,20 +17,164 @@ pub struct Board {
     pub live_black_pieces: Vec<AnyPiece>,
     pub white_king_position: (usize, usize),
     pub black_king_position: (usize, usize),
+    pub last_move_color: PieceColor,
 }
 
 impl Board {
     pub fn new() -> Board {
         Board {
             position_board: Board::create_default_position_board(),
-            live_white_pieces: Vec::new(),
-            live_black_pieces: Vec::new(),
+            live_white_pieces: Board::default_live_white_pieces(),
+            live_black_pieces: Board::default_live_black_pieces(),
             white_king_position: Board::default_white_king_pos(),
             black_king_position: Board::default_black_king_pos(),
+            last_move_color: PieceColor::BLACK,
         }
     }
 
-    pub fn find_piece(
+    fn default_live_white_pieces() -> Vec<AnyPiece> {
+        vec![
+            AnyPiece::Rook(Rook::new(0, 0, PieceColor::WHITE)),
+            AnyPiece::Rook(Rook::new(7, 0, PieceColor::WHITE)),
+            AnyPiece::Knight(Knight::new(1, 0, PieceColor::WHITE)),
+            AnyPiece::Knight(Knight::new(6, 0, PieceColor::WHITE)),
+            AnyPiece::Bishop(Bishop::new(2, 0, PieceColor::WHITE)),
+            AnyPiece::Bishop(Bishop::new(5, 0, PieceColor::WHITE)),
+            AnyPiece::Queen(Queen::new(3, 0, PieceColor::WHITE)),
+            AnyPiece::King(King::new(4, 0, PieceColor::WHITE)),
+            AnyPiece::Pawn(Pawn::new(0, 1, PieceColor::WHITE)),
+            AnyPiece::Pawn(Pawn::new(1, 1, PieceColor::WHITE)),
+            AnyPiece::Pawn(Pawn::new(2, 1, PieceColor::WHITE)),
+            AnyPiece::Pawn(Pawn::new(3, 1, PieceColor::WHITE)),
+            AnyPiece::Pawn(Pawn::new(4, 1, PieceColor::WHITE)),
+            AnyPiece::Pawn(Pawn::new(5, 1, PieceColor::WHITE)),
+            AnyPiece::Pawn(Pawn::new(6, 1, PieceColor::WHITE)),
+            AnyPiece::Pawn(Pawn::new(7, 1, PieceColor::WHITE)),
+        ]
+    }
+
+    fn default_live_black_pieces() -> Vec<AnyPiece> {
+        vec![
+            AnyPiece::Rook(Rook::new(0, 7, PieceColor::BLACK)),
+            AnyPiece::Rook(Rook::new(7, 7, PieceColor::BLACK)),
+            AnyPiece::Knight(Knight::new(1, 7, PieceColor::BLACK)),
+            AnyPiece::Knight(Knight::new(6, 7, PieceColor::BLACK)),
+            AnyPiece::Bishop(Bishop::new(2, 7, PieceColor::BLACK)),
+            AnyPiece::Bishop(Bishop::new(5, 7, PieceColor::BLACK)),
+            AnyPiece::Queen(Queen::new(3, 7, PieceColor::BLACK)),
+            AnyPiece::King(King::new(4, 7, PieceColor::BLACK)),
+            AnyPiece::Pawn(Pawn::new(0, 6, PieceColor::BLACK)),
+            AnyPiece::Pawn(Pawn::new(1, 6, PieceColor::BLACK)),
+            AnyPiece::Pawn(Pawn::new(2, 6, PieceColor::BLACK)),
+            AnyPiece::Pawn(Pawn::new(3, 6, PieceColor::BLACK)),
+            AnyPiece::Pawn(Pawn::new(4, 6, PieceColor::BLACK)),
+            AnyPiece::Pawn(Pawn::new(5, 6, PieceColor::BLACK)),
+            AnyPiece::Pawn(Pawn::new(6, 6, PieceColor::BLACK)),
+            AnyPiece::Pawn(Pawn::new(7, 6, PieceColor::BLACK)),
+        ]
+    }
+
+    fn is_correct_piece_type(piece: &AnyPiece, compare_type: &str) -> bool {
+        let compare_type = String::from(compare_type);
+        match piece {
+            AnyPiece::Knight(_) => compare_type == String::from("N"),
+            AnyPiece::King(_) => compare_type == String::from("K"),
+            AnyPiece::Queen(_) => compare_type == String::from("Q"),
+            AnyPiece::Rook(_) => compare_type == String::from("R"),
+            AnyPiece::Pawn(_) => compare_type == String::from("P"),
+            AnyPiece::Bishop(_) => compare_type == String::from("B"),
+        }
+    }
+
+    pub fn find_start_piece_from_move(
+        &mut self,
+        parsed_move: &parser::ParsedMove,
+    ) -> Option<&mut AnyPiece> {
+        let piece_list = match self.last_move_color {
+            PieceColor::BLACK => &mut self.live_white_pieces,
+            PieceColor::WHITE => &mut self.live_black_pieces,
+        };
+
+        let end_x: usize = parser::parse_coordinate(&parsed_move.end_coords.0);
+        let end_y: usize = parser::parse_coordinate(&parsed_move.end_coords.1);
+        let mut return_value = None;
+        for piece in piece_list {
+            // find a piece that can move to that location and is of the corret type
+            // This move must not leave the player in check
+            // This move must be valid.  A pawn can only move diagonal in a take or en passant
+            if piece.can_move(end_x, end_y, &self.position_board)
+                && Board::is_correct_piece_type(piece, &parsed_move.piece_char)
+            {
+                if &String::from("P") == &parsed_move.piece_char {
+                    let delta_x =
+                        usize::max(end_x, piece.get_pos().0) - usize::min(end_x, piece.get_pos().0);
+
+                    let return_piece = match &parsed_move.move_type {
+                        MoveTypes::Take => {
+                            if delta_x == 1 {
+                                return_value = Some(piece);
+                            }
+                        }
+                        MoveTypes::Move => {
+                            if delta_x == 0 {
+                                return_value = Some(piece);
+                            }
+                        }
+                        MoveTypes::Promote(piece_symbol) => {
+                            match self.position_board.get(end_x).unwrap().get(end_y).unwrap() {
+                                QuickPiece::EMPTY => {
+                                    if delta_x == 0 {
+                                        return_value = Some(piece);
+                                    }
+                                }
+                                _ => {
+                                    if delta_x == 1 {
+                                        return_value = Some(piece);
+                                    }
+                                }
+                            }
+                        }
+                        _ => (),
+                    };
+                } else {
+                    return_value = Some(piece);
+                }
+            }
+        }
+        return_value
+    }
+
+    // @TODO ANother method that will have errors that need to be checked
+    fn remove_piece_color(&mut self, x_coord: usize, y_coord: usize, color_to_remove: &PieceColor) {
+        let piece_list = match color_to_remove {
+            PieceColor::WHITE => {
+                for (piece, index) in self
+                    .live_white_pieces
+                    .iter()
+                    .zip(0..self.live_white_pieces.len())
+                {
+                    if piece.get_pos() == (x_coord, y_coord) {
+                        self.live_white_pieces.remove(index);
+                        return;
+                    }
+                }
+            }
+            PieceColor::BLACK => {
+                for (piece, index) in self
+                    .live_black_pieces
+                    .iter()
+                    .zip(0..self.live_black_pieces.len())
+                {
+                    if piece.get_pos() == (x_coord, y_coord) {
+                        self.live_black_pieces.remove(index);
+                        return;
+                    }
+                }
+            }
+        };
+    }
+
+    pub fn find_piece_color(
         &mut self,
         x_coord: usize,
         y_coord: usize,
@@ -91,83 +244,144 @@ impl Board {
             vec![
                 QuickPiece::PIECE(PieceColor::WHITE),
                 QuickPiece::PIECE(PieceColor::WHITE),
+                QuickPiece::EMPTY,
+                QuickPiece::EMPTY,
+                QuickPiece::EMPTY,
+                QuickPiece::EMPTY,
+                QuickPiece::PIECE(PieceColor::BLACK),
+                QuickPiece::PIECE(PieceColor::BLACK),
+            ],
+            vec![
                 QuickPiece::PIECE(PieceColor::WHITE),
                 QuickPiece::PIECE(PieceColor::WHITE),
+                QuickPiece::EMPTY,
+                QuickPiece::EMPTY,
+                QuickPiece::EMPTY,
+                QuickPiece::EMPTY,
+                QuickPiece::PIECE(PieceColor::BLACK),
+                QuickPiece::PIECE(PieceColor::BLACK),
+            ],
+            vec![
+                QuickPiece::PIECE(PieceColor::WHITE),
+                QuickPiece::PIECE(PieceColor::WHITE),
+                QuickPiece::EMPTY,
+                QuickPiece::EMPTY,
+                QuickPiece::EMPTY,
+                QuickPiece::EMPTY,
+                QuickPiece::PIECE(PieceColor::BLACK),
+                QuickPiece::PIECE(PieceColor::BLACK),
+            ],
+            vec![
+                QuickPiece::PIECE(PieceColor::WHITE),
+                QuickPiece::PIECE(PieceColor::WHITE),
+                QuickPiece::EMPTY,
+                QuickPiece::EMPTY,
+                QuickPiece::EMPTY,
+                QuickPiece::EMPTY,
+                QuickPiece::PIECE(PieceColor::BLACK),
+                QuickPiece::PIECE(PieceColor::BLACK),
+            ],
+            vec![
                 QuickPiece::KING(PieceColor::WHITE),
                 QuickPiece::PIECE(PieceColor::WHITE),
-                QuickPiece::PIECE(PieceColor::WHITE),
-                QuickPiece::PIECE(PieceColor::WHITE),
-            ],
-            vec![
-                QuickPiece::PIECE(PieceColor::WHITE),
-                QuickPiece::PIECE(PieceColor::WHITE),
-                QuickPiece::PIECE(PieceColor::WHITE),
-                QuickPiece::PIECE(PieceColor::WHITE),
-                QuickPiece::PIECE(PieceColor::WHITE),
-                QuickPiece::PIECE(PieceColor::WHITE),
-                QuickPiece::PIECE(PieceColor::WHITE),
-                QuickPiece::PIECE(PieceColor::WHITE),
-            ],
-            vec![
                 QuickPiece::EMPTY,
                 QuickPiece::EMPTY,
                 QuickPiece::EMPTY,
                 QuickPiece::EMPTY,
-                QuickPiece::EMPTY,
-                QuickPiece::EMPTY,
-                QuickPiece::EMPTY,
-                QuickPiece::EMPTY,
-            ],
-            vec![
-                QuickPiece::EMPTY,
-                QuickPiece::EMPTY,
-                QuickPiece::EMPTY,
-                QuickPiece::EMPTY,
-                QuickPiece::EMPTY,
-                QuickPiece::EMPTY,
-                QuickPiece::EMPTY,
-                QuickPiece::EMPTY,
-            ],
-            vec![
-                QuickPiece::EMPTY,
-                QuickPiece::EMPTY,
-                QuickPiece::EMPTY,
-                QuickPiece::EMPTY,
-                QuickPiece::EMPTY,
-                QuickPiece::EMPTY,
-                QuickPiece::EMPTY,
-                QuickPiece::EMPTY,
-            ],
-            vec![
-                QuickPiece::EMPTY,
-                QuickPiece::EMPTY,
-                QuickPiece::EMPTY,
-                QuickPiece::EMPTY,
-                QuickPiece::EMPTY,
-                QuickPiece::EMPTY,
-                QuickPiece::EMPTY,
-                QuickPiece::EMPTY,
-            ],
-            vec![
-                QuickPiece::PIECE(PieceColor::BLACK),
-                QuickPiece::PIECE(PieceColor::BLACK),
-                QuickPiece::PIECE(PieceColor::BLACK),
-                QuickPiece::PIECE(PieceColor::BLACK),
-                QuickPiece::PIECE(PieceColor::BLACK),
-                QuickPiece::PIECE(PieceColor::BLACK),
-                QuickPiece::PIECE(PieceColor::BLACK),
-                QuickPiece::PIECE(PieceColor::BLACK),
-            ],
-            vec![
-                QuickPiece::PIECE(PieceColor::BLACK),
-                QuickPiece::PIECE(PieceColor::BLACK),
-                QuickPiece::PIECE(PieceColor::BLACK),
                 QuickPiece::PIECE(PieceColor::BLACK),
                 QuickPiece::KING(PieceColor::BLACK),
+            ],
+            vec![
+                QuickPiece::PIECE(PieceColor::WHITE),
+                QuickPiece::PIECE(PieceColor::WHITE),
+                QuickPiece::EMPTY,
+                QuickPiece::EMPTY,
+                QuickPiece::EMPTY,
+                QuickPiece::EMPTY,
                 QuickPiece::PIECE(PieceColor::BLACK),
+                QuickPiece::PIECE(PieceColor::BLACK),
+            ],
+            vec![
+                QuickPiece::PIECE(PieceColor::WHITE),
+                QuickPiece::PIECE(PieceColor::WHITE),
+                QuickPiece::EMPTY,
+                QuickPiece::EMPTY,
+                QuickPiece::EMPTY,
+                QuickPiece::EMPTY,
+                QuickPiece::PIECE(PieceColor::BLACK),
+                QuickPiece::PIECE(PieceColor::BLACK),
+            ],
+            vec![
+                QuickPiece::PIECE(PieceColor::WHITE),
+                QuickPiece::PIECE(PieceColor::WHITE),
+                QuickPiece::EMPTY,
+                QuickPiece::EMPTY,
+                QuickPiece::EMPTY,
+                QuickPiece::EMPTY,
                 QuickPiece::PIECE(PieceColor::BLACK),
                 QuickPiece::PIECE(PieceColor::BLACK),
             ],
         ]
+    }
+
+    fn move_in_quick_board(
+        &mut self,
+        moving_x: usize,
+        moving_y: usize,
+        moving_piece_color: &PieceColor,
+        end_x: usize,
+        end_y: usize,
+    ) {
+        let mut starting_piece = self
+            .position_board
+            .get_mut(moving_x)
+            .unwrap()
+            .remove(moving_y);
+        self.position_board
+            .get_mut(moving_x)
+            .unwrap()
+            .insert(moving_y, QuickPiece::EMPTY);
+        self.position_board.get_mut(end_x).unwrap().remove(end_y);
+        self.position_board
+            .get_mut(end_x)
+            .unwrap()
+            .insert(end_y, starting_piece);
+    }
+
+    fn move_piece(
+        &mut self,
+        moving_x: usize,
+        moving_y: usize,
+        moving_piece_color: &PieceColor,
+        end_x: usize,
+        end_y: usize,
+    ) {
+        // @TODO This is where we must promote a pawn if it is a promotion move
+        self.move_in_quick_board(moving_x, moving_y, moving_piece_color, end_x, end_y);
+
+        let color_being_taken = match moving_piece_color {
+            PieceColor::WHITE => PieceColor::BLACK,
+            PieceColor::BLACK => PieceColor::WHITE,
+        };
+
+        self.remove_piece_color(end_x, end_y, &color_being_taken);
+
+        // Set the piece's new position
+        self.find_piece_color(moving_x, moving_y, moving_piece_color)
+            .unwrap()
+            .set_pos(end_x, end_y);
+    }
+
+    // Right now this I am assuming that this function is only used by my tests or after a move has been deemed valid
+    // @TODO Maybe add if move says check or check mate make that check too
+    pub fn play_move(&mut self, parsed_move: ParsedMove) {
+        let current_move_color = PieceColor::opposite_color(&self.last_move_color);
+        let mut moving_piece = self.find_start_piece_from_move(&parsed_move);
+        let (moving_x, moving_y) = moving_piece.unwrap().get_pos();
+        let end_x = parser::parse_coordinate(&parsed_move.end_coords.0);
+        let end_y = parser::parse_coordinate(&parsed_move.end_coords.1);
+
+        self.move_piece(moving_x, moving_y, &current_move_color, end_x, end_y);
+        self.last_move_color = PieceColor::opposite_color(&self.last_move_color);
     }
 }

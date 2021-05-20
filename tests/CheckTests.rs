@@ -20,6 +20,7 @@ fn test_check_same_color() {
         live_black_pieces: vec![],
         white_king_position: (0, 0),
         black_king_position: (0, 0),
+        last_move_color: PieceColor::BLACK,
     };
 
     let bishop = Bishop::new(4, 4, PieceColor::WHITE);
@@ -93,6 +94,7 @@ fn test_check_through_pieces() {
         live_black_pieces: vec![],
         white_king_position: (0, 0),
         black_king_position: (0, 0),
+        last_move_color: PieceColor::BLACK,
     };
 
     let bishop = Bishop::new(4, 4, PieceColor::BLACK);
@@ -135,6 +137,7 @@ fn will_move_be_in_check() {
         live_black_pieces: vec![],
         white_king_position: (0, 0),
         black_king_position: (0, 0),
+        last_move_color: PieceColor::BLACK,
     };
 
     common::insert_piece_into_board(
@@ -201,6 +204,7 @@ fn test_check_mate() {
         live_black_pieces: vec![],
         white_king_position: (0, 0),
         black_king_position: (0, 0),
+        last_move_color: PieceColor::BLACK,
     };
 
     common::insert_piece_into_board(

@@ -7,7 +7,7 @@ pub mod queen;
 pub mod rook;
 
 use super::piece_types;
-use crate::piece_types::QuickPiece;
+use crate::piece_types::{PieceColor, QuickPiece};
 use crate::pieces::bishop::Bishop;
 use crate::pieces::king::King;
 use crate::pieces::knight::Knight;
@@ -29,7 +29,7 @@ pub trait PieceMove {
     fn set_pos(&mut self, x_coord: usize, y_coord: usize);
 }
 
-#[derive(Copy, Clone)]
+#[derive(Copy, Clone, Debug)]
 pub enum AnyPiece {
     King(King),
     Queen(Queen),
@@ -37,6 +37,21 @@ pub enum AnyPiece {
     Knight(Knight),
     Rook(Rook),
     Pawn(Pawn),
+}
+
+impl AnyPiece {
+    pub fn from_piece_character(
+        piece_symbol_string: &String,
+        x_coord: usize,
+        y_coord: usize,
+        new_piece_color: PieceColor,
+    ) -> AnyPiece {
+        let piece_symbol_char = piece_symbol_string.chars().next().unwrap();
+        match piece_symbol_char {
+            'Q' => AnyPiece::Queen(Queen::new(x_coord, y_coord, new_piece_color)),
+            _ => panic!("AAAAAAAAAAAAAA"),
+        }
+    }
 }
 
 impl PieceMove for AnyPiece {

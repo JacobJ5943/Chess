@@ -4,7 +4,7 @@ use crate::pieces::coord_on_board;
 use crate::pieces::PieceMove;
 use std::cmp::max;
 
-#[derive(Copy, Clone)]
+#[derive(Copy, Clone, Debug)]
 pub struct Pawn {
     pos_x: usize,
     pos_y: usize,
@@ -14,12 +14,6 @@ pub struct Pawn {
 
 impl Pawn {
     pub fn new(pos_x: usize, pos_y: usize, piece_color: PieceColor) -> Pawn {
-        /*
-        let starting_y_position = match piece_color {
-            PieceColor::WHITE => 1,
-            PieceColor::BLACK => 6,
-        };
-        */
         let starting_y_position = pos_y;
         Pawn {
             pos_x,
@@ -98,12 +92,23 @@ impl PieceMove for Pawn {
         let mut piece_on_location_result = true;
         // @TODO this check could be refactored out so there is less doubling of work
         if check_if_piece_on_location(x_coord, y_coord, quick_board) {
-            let piece = quick_board.get(x_coord).unwrap().get(y_coord).unwrap();
-            piece_on_location_result = match piece {
-                QuickPiece::PIECE(color) => !(*color == self.piece_color),
-                QuickPiece::KING(color) => !(*color == self.piece_color),
-                QuickPiece::EMPTY => true,
-            };
+            if x_delta == 1 {
+                let piece = quick_board.get(x_coord).unwrap().get(y_coord).unwrap();
+                piece_on_location_result = match piece {
+                    QuickPiece::PIECE(color) => !(*color == self.piece_color),
+                    QuickPiece::KING(color) => !(*color == self.piece_color),
+                    QuickPiece::EMPTY => true,
+                };
+            }
+        } else {
+            if x_delta == 0 {
+                let piece = quick_board.get(x_coord).unwrap().get(y_coord).unwrap();
+                piece_on_location_result = match piece {
+                    QuickPiece::PIECE(color) => !(*color == self.piece_color),
+                    QuickPiece::KING(color) => !(*color == self.piece_color),
+                    QuickPiece::EMPTY => true,
+                };
+            }
         }
         piece_on_location_result
     }
