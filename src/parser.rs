@@ -3,6 +3,32 @@ use std::error::Error;
 use std::fmt;
 use std::str::Chars;
 
+#[derive(Debug, PartialEq)]
+struct ParsedMove {
+    piece_char: String,
+    starting_coords: (Option<String>, Option<String>),
+    end_coords: (String, String),
+    move_type: MoveTypes,
+    check_or_checkmate: CheckOrCheckMate,
+}
+impl ParsedMove {
+    pub fn new(
+        piece_char: String,
+        starting_coords: (Option<String>, Option<String>),
+        end_coords: (String, String),
+        move_type: MoveTypes,
+        check_or_checkmate: CheckOrCheckMate,
+    ) -> ParsedMove {
+        ParsedMove {
+            piece_char,
+            starting_coords,
+            end_coords,
+            move_type,
+            check_or_checkmate,
+        }
+    }
+}
+
 #[derive(Debug)]
 struct ParseError {
     details: String,
@@ -45,26 +71,8 @@ fn parse_game_moves(
     game_string: String,
 ) -> Vec<(
     String,
-    Result<
-        (
-            String,
-            (Option<String>, Option<String>),
-            (String, String),
-            MoveTypes,
-            CheckOrCheckMate,
-        ),
-        ParseError,
-    >,
-    Result<
-        (
-            String,
-            (Option<String>, Option<String>),
-            (String, String),
-            MoveTypes,
-            CheckOrCheckMate,
-        ),
-        ParseError,
-    >,
+    Result<ParsedMove, ParseError>,
+    Result<ParsedMove, ParseError>,
 )> {
     // Then I want to move in sets of 3
     let mut moves_vector = Vec::new();
@@ -87,28 +95,12 @@ fn parse_game_moves(
             parse_move(moves.get(index + 1).unwrap()),
             parse_move(moves.get(index + 2).unwrap()),
         ));
-
-        //move_number = String::from(possible_move).remove(possible_move.len() - 1) as usize,
-        //white_move = Some(parse_move(moves.get()));
-        //black_move = Some(parse_move(possible_move));
-        //moves_vector.push((move_number, white_move.unwrap(), black_move.unwrap()));
     }
 
     moves_vector
 }
 
-fn parse_move(
-    move_string: &str,
-) -> Result<
-    (
-        String,
-        (Option<String>, Option<String>),
-        (String, String),
-        MoveTypes,
-        CheckOrCheckMate,
-    ),
-    ParseError,
-> {
+fn parse_move(move_string: &str) -> Result<ParsedMove, ParseError> {
     let move_string = String::from(move_string);
     let mut characters = move_string.chars();
     match characters.next().unwrap() {
@@ -118,22 +110,11 @@ fn parse_move(
     }
 }
 
-fn parse_piece_move(
-    move_string: String,
-) -> Result<
-    (
-        String,
-        (Option<String>, Option<String>),
-        (String, String),
-        MoveTypes,
-        CheckOrCheckMate,
-    ),
-    ParseError,
-> {
+fn parse_piece_move(move_string: String) -> Result<ParsedMove, ParseError> {
     let characters: Vec<char> = move_string.chars().collect();
 
     match characters.get(1).unwrap() {
-        'x' => Ok((
+        'x' => Ok(ParsedMove::new(
             characters.get(0).unwrap().to_string(),
             (None, None),
             (
@@ -144,7 +125,7 @@ fn parse_piece_move(
             check_for_check_or_mate(&move_string),
         )),
         'a' | 'b' | 'c' | 'd' | 'e' | 'f' | 'g' | 'h' => match characters.get(2).unwrap() {
-            'a' | 'b' | 'c' | 'd' | 'e' | 'f' | 'g' | 'h' => Ok((
+            'a' | 'b' | 'c' | 'd' | 'e' | 'f' | 'g' | 'h' => Ok(ParsedMove::new(
                 characters.get(0).unwrap().to_string(),
                 (Some(characters.get(1).unwrap().to_string()), None),
                 (
@@ -155,7 +136,7 @@ fn parse_piece_move(
                 check_for_check_or_mate(&move_string),
             )),
             '1' | '2' | '3' | '4' | '5' | '6' | '7' | '8' => match characters.get(3) {
-                Some('x') => Ok((
+                Some('x') => Ok(ParsedMove::new(
                     characters.get(0).unwrap().to_string(),
                     (
                         Some(characters.get(1).unwrap().to_string()),
@@ -169,7 +150,7 @@ fn parse_piece_move(
                     check_for_check_or_mate(&move_string),
                 )),
                 Some('a') | Some('b') | Some('c') | Some('d') | Some('e') | Some('f')
-                | Some('g') | Some('h') => Ok((
+                | Some('g') | Some('h') => Ok(ParsedMove::new(
                     characters.get(0).unwrap().to_string(),
                     (
                         Some(characters.get(1).unwrap().to_string()),
@@ -182,7 +163,7 @@ fn parse_piece_move(
                     MoveTypes::Move,
                     check_for_check_or_mate(&move_string),
                 )),
-                Some('#') | Some('+') | None => Ok((
+                Some('#') | Some('+') | None => Ok(ParsedMove::new(
                     characters.get(0).unwrap().to_string(),
                     (None, None),
                     (
@@ -194,7 +175,7 @@ fn parse_piece_move(
                 )),
                 _ => Err(ParseError::new("oh no")),
             },
-            'x' => Ok((
+            'x' => Ok(ParsedMove::new(
                 characters.get(0).unwrap().to_string(),
                 (Some(characters.get(1).unwrap().to_string()), None),
                 (
@@ -211,21 +192,10 @@ fn parse_piece_move(
     }
 }
 
-fn parse_pawn_move(
-    move_string: String,
-) -> Result<
-    (
-        String,
-        (Option<String>, Option<String>),
-        (String, String),
-        MoveTypes,
-        CheckOrCheckMate,
-    ),
-    ParseError,
-> {
+fn parse_pawn_move(move_string: String) -> Result<ParsedMove, ParseError> {
     let characters: Vec<char> = move_string.chars().collect();
     match characters.get(1).unwrap() {
-        '2' | '3' | '4' | '5' | '6' | '7' => Ok((
+        '2' | '3' | '4' | '5' | '6' | '7' => Ok(ParsedMove::new(
             String::from("P"),
             (Some(characters.get(0).unwrap().to_string()), None),
             (
@@ -236,7 +206,7 @@ fn parse_pawn_move(
             check_for_check_or_mate(&move_string),
         )),
         'x' => match characters.get(4) {
-            Some('=') => Ok((
+            Some('=') => Ok(ParsedMove::new(
                 String::from("P"),
                 (Some(characters.get(0).unwrap().to_string()), None),
                 (
@@ -246,7 +216,7 @@ fn parse_pawn_move(
                 MoveTypes::Promote(characters.get(5).unwrap().to_string()),
                 check_for_check_or_mate(&move_string),
             )),
-            _ => Ok((
+            _ => Ok(ParsedMove::new(
                 String::from("P"),
                 (Some(characters.get(0).unwrap().to_string()), None),
                 (
@@ -258,7 +228,7 @@ fn parse_pawn_move(
             )),
         },
         '1' | '8' => match characters.get(2).unwrap() {
-            'Q' | 'R' | 'B' | 'N' => Ok((
+            'Q' | 'R' | 'B' | 'N' => Ok(ParsedMove::new(
                 String::from("P"),
                 (None, None),
                 (
@@ -268,7 +238,7 @@ fn parse_pawn_move(
                 MoveTypes::Promote(characters.get(2).unwrap().to_string()),
                 check_for_check_or_mate(&move_string),
             )),
-            '=' => Ok((
+            '=' => Ok(ParsedMove::new(
                 String::from("P"),
                 (None, None),
                 (
@@ -293,7 +263,7 @@ fn check_for_check_or_mate(move_string: &str) -> CheckOrCheckMate {
 #[cfg(test)]
 mod tests {
     use crate::parser::CheckOrCheckMate::CheckMate;
-    use crate::parser::{parse_game_moves, parse_move, CheckOrCheckMate, MoveTypes};
+    use crate::parser::{parse_game_moves, parse_move, CheckOrCheckMate, MoveTypes, ParsedMove};
 
     // Pawn moves
 
@@ -302,7 +272,7 @@ mod tests {
         let result_move = parse_move("e4").unwrap();
         assert_eq!(
             result_move,
-            (
+            ParsedMove::new(
                 String::from("P"),
                 (Some("e".to_string()), None),
                 ("e".to_string(), "4".to_string()),
@@ -318,7 +288,7 @@ mod tests {
         let result_move = parse_move("exd4").unwrap();
         assert_eq!(
             result_move,
-            (
+            ParsedMove::new(
                 String::from("P"),
                 (Some("e".to_string()), None),
                 ("d".to_string(), "4".to_string()),
@@ -333,7 +303,7 @@ mod tests {
         let result_move = parse_move("exd8=N").unwrap();
         assert_eq!(
             result_move,
-            (
+            ParsedMove::new(
                 String::from("P"),
                 (Some("e".to_string()), None),
                 ("d".to_string(), "8".to_string()),
@@ -349,7 +319,7 @@ mod tests {
         let result_move = parse_move("Nd3").unwrap();
         assert_eq!(
             result_move,
-            (
+            ParsedMove::new(
                 String::from("N"),
                 (None, None),
                 ("d".to_string(), "3".to_string()),
@@ -365,7 +335,7 @@ mod tests {
         let result_move = parse_move("Ned3").unwrap();
         assert_eq!(
             result_move,
-            (
+            ParsedMove::new(
                 String::from("N"),
                 (Some("e".to_string()), None),
                 ("d".to_string(), "3".to_string()),
@@ -381,7 +351,7 @@ mod tests {
         let result_move = parse_move("Ne7d3").unwrap();
         assert_eq!(
             result_move,
-            (
+            ParsedMove::new(
                 String::from("N"),
                 (Some("e".to_string()), Some("7".to_string())),
                 ("d".to_string(), "3".to_string()),
@@ -397,7 +367,7 @@ mod tests {
         let result_move = parse_move("Nxd3").unwrap();
         assert_eq!(
             result_move,
-            (
+            ParsedMove::new(
                 String::from("N"),
                 (None, None),
                 ("d".to_string(), "3".to_string()),
@@ -413,7 +383,7 @@ mod tests {
         let result_move = parse_move("Nexd3").unwrap();
         assert_eq!(
             result_move,
-            (
+            ParsedMove::new(
                 String::from("N"),
                 (Some("e".to_string()), None),
                 ("d".to_string(), "3".to_string()),
@@ -429,7 +399,7 @@ mod tests {
         let result_move = parse_move("Ne7xd3").unwrap();
         assert_eq!(
             result_move,
-            (
+            ParsedMove::new(
                 String::from("N"),
                 (Some("e".to_string()), Some("7".to_string())),
                 ("d".to_string(), "3".to_string()),
