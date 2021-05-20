@@ -21,13 +21,6 @@ impl Bishop {
 }
 
 impl PieceMove for Bishop {
-    fn get_pos(&self) -> (usize, usize) {
-        (self.pos_x, self.pos_y)
-    }
-    fn set_pos(&mut self, x_coord: usize, y_coord: usize) {
-        self.pos_x = x_coord;
-        self.pos_y = y_coord;
-    }
     // @TODO All the returns feel wrong
     fn can_move(&self, x_coord: usize, y_coord: usize, quick_board: &Vec<Vec<QuickPiece>>) -> bool {
         if !coord_on_board(x_coord, y_coord, quick_board) {
@@ -65,8 +58,36 @@ impl PieceMove for Bishop {
         piece_on_location_result
     }
 
+    // I'm sure there's a much better way to create this funciton
     fn moves_on_board(&self) -> Vec<(usize, usize)> {
-        // This will need access to the board of quick pieces as well.
-        Vec::new()
+        let mut moves_vector: Vec<(usize, usize)> = Vec::new();
+        let upper_right = ((self.pos_x + 1)..8).zip((self.pos_y + 1)..8);
+        let lower_right = ((self.pos_x + 1)..8).zip((0..self.pos_y).rev());
+        let upper_left = (0..self.pos_x).rev().zip(self.pos_y + 1..8);
+        let lower_left = (0..self.pos_x).rev().zip((0..self.pos_y).rev());
+
+        for (left, right) in upper_right {
+            moves_vector.push((left, right));
+        }
+        for (left, right) in lower_right {
+            moves_vector.push((left, right));
+        }
+        for (left, right) in lower_left {
+            moves_vector.push((left, right));
+        }
+        for (left, right) in upper_left {
+            moves_vector.push((left, right));
+        }
+
+        moves_vector
+    }
+
+    fn get_pos(&self) -> (usize, usize) {
+        (self.pos_x, self.pos_y)
+    }
+
+    fn set_pos(&mut self, x_coord: usize, y_coord: usize) {
+        self.pos_x = x_coord;
+        self.pos_y = y_coord;
     }
 }

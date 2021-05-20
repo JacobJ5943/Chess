@@ -50,7 +50,43 @@ impl PieceMove for Knight {
     }
 
     fn moves_on_board(&self) -> Vec<(usize, usize)> {
-        // This will need access to the board of quick pieces as well.
-        Vec::new()
+        let mut possible_moves = Vec::new();
+
+        if let 2 | 3 | 4 | 5 | 6 | 7 = self.pos_x + 2 {
+            if let 2 | 3 | 4 | 5 | 6 | 7 = self.pos_y + 1 {
+                possible_moves.push((self.pos_x + 2, self.pos_y + 1));
+            }
+            if let 0 | 1 | 2 | 3 | 4 | 5 | 6 = self.pos_y - 1 {
+                possible_moves.push((self.pos_x + 2, self.pos_y - 1));
+            }
+        }
+
+        if let 0 | 1 | 2 | 3 | 4 | 5 = self.pos_x - 2 {
+            if let 2 | 3 | 4 | 5 | 6 | 7 = self.pos_y + 1 {
+                possible_moves.push((self.pos_x - 2, self.pos_y + 1));
+            }
+            if let 0 | 1 | 2 | 3 | 4 | 5 | 6 = self.pos_y - 1 {
+                possible_moves.push((self.pos_x - 2, self.pos_y - 1));
+            }
+        }
+
+        if let 0 | 1 | 2 | 3 | 4 | 5 = self.pos_y - 2 {
+            if let 2 | 3 | 4 | 5 | 6 | 7 = self.pos_x + 1 {
+                possible_moves.push((self.pos_x + 1, self.pos_y - 2));
+            }
+            if let 0 | 1 | 2 | 3 | 4 | 5 | 6 = self.pos_x - 1 {
+                possible_moves.push((self.pos_x - 1, self.pos_y - 2));
+            }
+        }
+        if let 0 | 1 | 2 | 3 | 4 | 5 = self.pos_y + 2 {
+            if let 2 | 3 | 4 | 5 | 6 | 7 = self.pos_x + 1 {
+                possible_moves.push((self.pos_x + 1, self.pos_y + 2));
+            }
+            if let 0 | 1 | 2 | 3 | 4 | 5 | 6 = self.pos_x - 1 {
+                possible_moves.push((self.pos_x - 1, self.pos_y + 2));
+            }
+        }
+
+        possible_moves
     }
 }

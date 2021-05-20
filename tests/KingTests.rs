@@ -254,3 +254,60 @@ fn test_can_move_out_of_bounds_up() {
         4
     );
 }
+
+#[test]
+fn test_moves_on_board_4_4() {
+    let mut board = common::create_board_with_piece(4, 4, QuickPiece::KING(PieceColor::BLACK));
+    let king = King::new(4, 4, PieceColor::BLACK);
+
+    common::insert_quick_piece_into_board(QuickPiece::PIECE(PieceColor::BLACK), 4, 4, &mut board);
+
+    let mut expected_possible_moves: Vec<(usize, usize)> = vec![
+        (3, 3),
+        (4, 3),
+        (5, 3),
+        (3, 4),
+        (5, 4),
+        (3, 5),
+        (4, 5),
+        (5, 5),
+    ];
+
+    expected_possible_moves.sort();
+    let mut actual_possible_moves = king.moves_on_board();
+    actual_possible_moves.sort();
+
+    assert_eq!(actual_possible_moves, expected_possible_moves);
+}
+
+#[test]
+fn test_moves_on_board_0_0() {
+    let mut board = common::create_board_with_piece(0, 0, QuickPiece::KING(PieceColor::BLACK));
+    let king = King::new(0, 0, PieceColor::BLACK);
+
+    common::insert_quick_piece_into_board(QuickPiece::PIECE(PieceColor::BLACK), 0, 0, &mut board);
+
+    let mut expected_possible_moves: Vec<(usize, usize)> = vec![(0, 1), (1, 1), (1, 0)];
+
+    expected_possible_moves.sort();
+    let mut actual_possible_moves = king.moves_on_board();
+    actual_possible_moves.sort();
+
+    assert_eq!(actual_possible_moves, expected_possible_moves);
+}
+
+#[test]
+fn test_moves_on_board_7_7() {
+    let mut board = common::create_board_with_piece(7, 7, QuickPiece::KING(PieceColor::BLACK));
+    let king = King::new(7, 7, PieceColor::BLACK);
+
+    common::insert_quick_piece_into_board(QuickPiece::PIECE(PieceColor::BLACK), 7, 7, &mut board);
+
+    let mut expected_possible_moves: Vec<(usize, usize)> = vec![(6, 7), (6, 6), (7, 6)];
+
+    expected_possible_moves.sort();
+    let mut actual_possible_moves = king.moves_on_board();
+    actual_possible_moves.sort();
+
+    assert_eq!(actual_possible_moves, expected_possible_moves);
+}

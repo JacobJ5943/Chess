@@ -364,3 +364,95 @@ fn test_can_move_capture_opposing_color() {
         4
     );
 }
+
+#[test]
+fn moves_on_board_4_4() {
+    let mut board = common::create_board_with_piece(4, 4, QuickPiece::PIECE(PieceColor::BLACK));
+    let rook = Rook::new(4, 4, PieceColor::BLACK);
+
+    common::insert_quick_piece_into_board(QuickPiece::PIECE(PieceColor::BLACK), 4, 4, &mut board);
+
+    let mut expected_possible_moves: Vec<(usize, usize)> = vec![
+        (0, 4),
+        (1, 4),
+        (2, 4),
+        (3, 4),
+        (5, 4),
+        (6, 4),
+        (7, 4),
+        (4, 0),
+        (4, 1),
+        (4, 2),
+        (4, 3),
+        (4, 5),
+        (4, 6),
+        (4, 7),
+    ];
+
+    expected_possible_moves.sort();
+    let mut actual_possible_moves = rook.moves_on_board();
+    actual_possible_moves.sort();
+
+    assert_eq!(actual_possible_moves, expected_possible_moves);
+}
+
+#[test]
+fn moves_on_board_0_0() {
+    let mut board = common::create_board_with_piece(0, 0, QuickPiece::PIECE(PieceColor::BLACK));
+    let rook = Rook::new(0, 0, PieceColor::BLACK);
+
+    common::insert_quick_piece_into_board(QuickPiece::PIECE(PieceColor::BLACK), 0, 0, &mut board);
+
+    let mut expected_possible_moves: Vec<(usize, usize)> = vec![
+        (0, 1),
+        (0, 2),
+        (0, 3),
+        (0, 4),
+        (0, 5),
+        (0, 6),
+        (0, 7),
+        (1, 0),
+        (2, 0),
+        (3, 0),
+        (4, 0),
+        (5, 0),
+        (6, 0),
+        (7, 0),
+    ];
+
+    expected_possible_moves.sort();
+    let mut actual_possible_moves = rook.moves_on_board();
+    actual_possible_moves.sort();
+
+    assert_eq!(actual_possible_moves, expected_possible_moves);
+}
+#[test]
+fn moves_on_board_7_7() {
+    let mut board = common::create_board_with_piece(7, 7, QuickPiece::PIECE(PieceColor::BLACK));
+    let rook = Rook::new(7, 7, PieceColor::BLACK);
+
+    common::insert_quick_piece_into_board(QuickPiece::PIECE(PieceColor::BLACK), 7, 7, &mut board);
+
+    let mut expected_possible_moves: Vec<(usize, usize)> = vec![
+        (0, 7),
+        (1, 7),
+        (2, 7),
+        (3, 7),
+        (4, 7),
+        (5, 7),
+        (6, 7),
+        (7, 0),
+        (7, 1),
+        (7, 2),
+        (7, 3),
+        (7, 4),
+        (7, 5),
+        (7, 6),
+    ];
+
+    expected_possible_moves.sort();
+    let mut actual_possible_moves = rook.moves_on_board();
+    actual_possible_moves.sort();
+
+    assert_eq!(actual_possible_moves, expected_possible_moves);
+}

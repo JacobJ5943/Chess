@@ -386,3 +386,89 @@ fn test_can_move_capture_opposing_color() {
         4
     );
 }
+
+#[test]
+fn test_moves_on_board_4_4() {
+    let mut board = common::create_board_with_piece(4, 4, QuickPiece::PIECE(PieceColor::BLACK));
+    let bishop = Bishop::new(4, 4, PieceColor::BLACK);
+
+    common::insert_quick_piece_into_board(QuickPiece::PIECE(PieceColor::BLACK), 4, 4, &mut board);
+
+    let mut expected_possible_moves = vec![
+        (3, 3),
+        (2, 2),
+        (1, 1),
+        (0, 0),
+        (5, 5),
+        (6, 6),
+        (7, 7),
+        (3, 5),
+        (2, 6),
+        (1, 7),
+        (5, 3),
+        (6, 2),
+        (7, 1),
+    ];
+    expected_possible_moves.sort();
+    let mut actual_possible_moves = bishop.moves_on_board();
+    actual_possible_moves.sort();
+
+    assert_eq!(actual_possible_moves, expected_possible_moves);
+}
+
+#[test]
+fn test_moves_on_board_0_0() {
+    let mut board = common::create_board_with_piece(0, 0, QuickPiece::PIECE(PieceColor::BLACK));
+    let bishop = Bishop::new(0, 0, PieceColor::BLACK);
+
+    common::insert_quick_piece_into_board(QuickPiece::PIECE(PieceColor::BLACK), 4, 4, &mut board);
+
+    let mut expected_possible_moves: Vec<(usize, usize)> = (1..8).zip(1..8).collect();
+    expected_possible_moves.sort();
+    let mut actual_possible_moves = bishop.moves_on_board();
+    actual_possible_moves.sort();
+
+    assert_eq!(actual_possible_moves, expected_possible_moves);
+}
+
+fn test_moves_on_board_0_7() {
+    let mut board = common::create_board_with_piece(0, 7, QuickPiece::PIECE(PieceColor::BLACK));
+    let bishop = Bishop::new(0, 7, PieceColor::BLACK);
+
+    common::insert_quick_piece_into_board(QuickPiece::PIECE(PieceColor::BLACK), 4, 4, &mut board);
+
+    let mut expected_possible_moves: Vec<(usize, usize)> = (1..8).zip((0..7).rev()).collect();
+    expected_possible_moves.sort();
+    let mut actual_possible_moves = bishop.moves_on_board();
+    actual_possible_moves.sort();
+
+    assert_eq!(actual_possible_moves, expected_possible_moves);
+}
+
+fn test_moves_on_board_7_0() {
+    let mut board = common::create_board_with_piece(7, 0, QuickPiece::PIECE(PieceColor::BLACK));
+    let bishop = Bishop::new(7, 0, PieceColor::BLACK);
+
+    common::insert_quick_piece_into_board(QuickPiece::PIECE(PieceColor::BLACK), 4, 4, &mut board);
+
+    let mut expected_possible_moves: Vec<(usize, usize)> = (0..7).rev().zip(1..8).collect();
+    expected_possible_moves.sort();
+    let mut actual_possible_moves = bishop.moves_on_board();
+    actual_possible_moves.sort();
+
+    assert_eq!(actual_possible_moves, expected_possible_moves);
+}
+
+fn test_moves_on_board_7_7() {
+    let mut board = common::create_board_with_piece(7, 7, QuickPiece::PIECE(PieceColor::BLACK));
+    let bishop = Bishop::new(7, 7, PieceColor::BLACK);
+
+    common::insert_quick_piece_into_board(QuickPiece::PIECE(PieceColor::BLACK), 4, 4, &mut board);
+
+    let mut expected_possible_moves: Vec<(usize, usize)> = (0..7).rev().zip((0..7).rev()).collect();
+    expected_possible_moves.sort();
+    let mut actual_possible_moves = bishop.moves_on_board();
+    actual_possible_moves.sort();
+
+    assert_eq!(actual_possible_moves, expected_possible_moves);
+}

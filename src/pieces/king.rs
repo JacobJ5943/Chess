@@ -52,30 +52,39 @@ impl PieceMove for King {
                 QuickPiece::KING(color) => !(*color == self.piece_color),
                 QuickPiece::EMPTY => true, // @TODO This I don't know  This case should never occur, but panic seems wrong
             };
-        }
+        };
         piece_on_location_result
     }
 
     fn moves_on_board(&self) -> Vec<(usize, usize)> {
-        let possible_moves = vec![
-            (self.pos_x - 1, self.pos_y + 1),
-            (self.pos_x, self.pos_y + 1),
-            (self.pos_x + 1, self.pos_y + 1),
-            (self.pos_x - 1, self.pos_y),
-            (self.pos_x + 1, self.pos_y),
-            (self.pos_x - 1, self.pos_y - 1),
-            (self.pos_x, self.pos_y - 1),
-            (self.pos_x + 1, self.pos_y - 1),
-        ];
-        let mut return_moves: Vec<(usize, usize)> = Vec::new();
-        for test1 in possible_moves
-            .iter()
-            .filter(|(x, y)| *x <= 7 && *x >= 0 && *y <= 7 && *y >= 0)
-            .into_iter()
-        {
-            return_moves.push(*test1);
+        let mut possible_moves = Vec::new();
+        if self.pos_y < 7 {
+            if self.pos_x < 7 {
+                (possible_moves.push((self.pos_x + 1, self.pos_y + 1)));
+            }
+            possible_moves.push((self.pos_x, self.pos_y + 1));
+            if self.pos_x > 0 {
+                possible_moves.push((self.pos_x - 1, self.pos_y + 1));
+            }
         }
 
-        return_moves
+        if self.pos_x < 7 {
+            possible_moves.push((self.pos_x + 1, self.pos_y));
+        }
+
+        if self.pos_x > 0 {
+            possible_moves.push((self.pos_x - 1, self.pos_y));
+        }
+
+        if self.pos_y > 0 {
+            if self.pos_x < 7 {
+                (possible_moves.push((self.pos_x + 1, self.pos_y - 1)));
+            }
+            possible_moves.push((self.pos_x, self.pos_y - 1));
+            if self.pos_x > 0 {
+                possible_moves.push((self.pos_x - 1, self.pos_y - 1));
+            }
+        }
+        possible_moves
     }
 }

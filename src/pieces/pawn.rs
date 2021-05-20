@@ -28,6 +28,13 @@ impl Pawn {
             starting_y_position,
         }
     }
+    fn has_moved(&self) -> bool {
+        match self.piece_color {
+            PieceColor::WHITE => self.pos_y != 1,
+            PieceColor::BLACK => self.pos_y != 6,
+        }
+    }
+
     fn is_moving_forward(&self, y_coord: usize) -> bool {
         let y_delta = y_coord as isize - self.pos_y as isize;
         match self.piece_color {
@@ -102,7 +109,40 @@ impl PieceMove for Pawn {
     }
 
     fn moves_on_board(&self) -> Vec<(usize, usize)> {
-        // This will need access to the board of quick pieces as well.
-        Vec::new()
+        let mut possible_moves = Vec::new();
+        match self.piece_color {
+            PieceColor::WHITE => {
+                possible_moves.push((self.pos_x, self.pos_y + 1));
+
+                if self.pos_x > 0 {
+                    possible_moves.push((self.pos_x - 1, self.pos_y + 1));
+                }
+
+                if self.pos_x < 7 {
+                    possible_moves.push((self.pos_x + 1, self.pos_y + 1));
+                }
+
+                if !self.has_moved() {
+                    possible_moves.push((self.pos_x, self.pos_y + 2));
+                }
+            }
+            PieceColor::BLACK => {
+                possible_moves.push((self.pos_x, self.pos_y - 1));
+
+                if self.pos_x > 0 {
+                    possible_moves.push((self.pos_x - 1, self.pos_y - 1));
+                }
+
+                if self.pos_x < 7 {
+                    possible_moves.push((self.pos_x + 1, self.pos_y - 1));
+                }
+
+                if !self.has_moved() {
+                    possible_moves.push((self.pos_x, self.pos_y - 2));
+                }
+            }
+        };
+
+        possible_moves
     }
 }

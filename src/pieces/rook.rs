@@ -71,7 +71,26 @@ impl PieceMove for Rook {
     }
 
     fn moves_on_board(&self) -> Vec<(usize, usize)> {
-        // This will need access to the board of quick pieces as well.
-        Vec::new()
+        let mut moves_vector: Vec<(usize, usize)> = Vec::new();
+
+        let right = ((self.pos_x + 1)..8);
+        let left = (0..self.pos_x).rev();
+        let up = (self.pos_y + 1)..8;
+        let down = (0..self.pos_y).rev();
+
+        for coord in right {
+            moves_vector.push((coord, self.pos_y))
+        }
+        for coord in left {
+            moves_vector.push((coord, self.pos_y))
+        }
+        for coord in up {
+            moves_vector.push((self.pos_x, coord))
+        }
+        for coord in down {
+            moves_vector.push((self.pos_x, coord))
+        }
+
+        moves_vector
     }
 }

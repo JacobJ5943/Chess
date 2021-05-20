@@ -82,7 +82,41 @@ impl PieceMove for Queen {
     }
 
     fn moves_on_board(&self) -> Vec<(usize, usize)> {
-        // This will need access to the board of quick pieces as well.
-        Vec::new()
+        let mut moves_vector = Vec::new();
+        let upper_right = ((self.pos_x + 1)..8).zip((self.pos_y + 1)..8);
+        let lower_right = ((self.pos_x + 1)..8).zip((0..self.pos_y).rev());
+        let upper_left = (0..self.pos_x).rev().zip(self.pos_y + 1..8);
+        let lower_left = (0..self.pos_x).rev().zip((0..self.pos_y).rev());
+        let right = ((self.pos_x + 1)..8);
+        let left = (0..self.pos_x).rev();
+        let up = (self.pos_y + 1)..8;
+        let down = (0..self.pos_y).rev();
+
+        for (left, right) in upper_right {
+            moves_vector.push((left, right));
+        }
+        for (left, right) in lower_right {
+            moves_vector.push((left, right));
+        }
+        for (left, right) in lower_left {
+            moves_vector.push((left, right));
+        }
+        for (left, right) in upper_left {
+            moves_vector.push((left, right));
+        }
+        for coord in right {
+            moves_vector.push((coord, self.pos_y))
+        }
+        for coord in left {
+            moves_vector.push((coord, self.pos_y))
+        }
+        for coord in up {
+            moves_vector.push((self.pos_x, coord))
+        }
+        for coord in down {
+            moves_vector.push((self.pos_x, coord))
+        }
+
+        moves_vector
     }
 }

@@ -325,3 +325,66 @@ fn test_move_two_initial_white() {
         4
     );
 }
+
+#[test]
+fn test_moves_on_board_white_start() {
+    let mut board = common::create_board_with_piece(4, 1, QuickPiece::PIECE(PieceColor::WHITE));
+    let pawn = Pawn::new(4, 1, PieceColor::WHITE);
+
+    common::insert_quick_piece_into_board(QuickPiece::PIECE(PieceColor::WHITE), 4, 1, &mut board);
+
+    let mut expected_possible_moves: Vec<(usize, usize)> = vec![(3, 2), (4, 2), (5, 2), (4, 3)];
+
+    expected_possible_moves.sort();
+    let mut actual_possible_moves = pawn.moves_on_board();
+    actual_possible_moves.sort();
+
+    assert_eq!(actual_possible_moves, expected_possible_moves);
+}
+#[test]
+fn test_moves_on_board_black_start() {
+    let mut board = common::create_board_with_piece(4, 6, QuickPiece::PIECE(PieceColor::BLACK));
+    let pawn = Pawn::new(4, 6, PieceColor::BLACK);
+
+    common::insert_quick_piece_into_board(QuickPiece::PIECE(PieceColor::BLACK), 4, 6, &mut board);
+
+    let mut expected_possible_moves: Vec<(usize, usize)> = vec![(3, 5), (4, 5), (5, 5), (4, 4)];
+
+    expected_possible_moves.sort();
+    let mut actual_possible_moves = pawn.moves_on_board();
+    actual_possible_moves.sort();
+
+    assert_eq!(actual_possible_moves, expected_possible_moves);
+}
+
+#[test]
+fn test_moves_on_board_black_has_moved() {
+    let mut board = common::create_board_with_piece(4, 5, QuickPiece::PIECE(PieceColor::BLACK));
+    let pawn = Pawn::new(4, 5, PieceColor::BLACK);
+
+    common::insert_quick_piece_into_board(QuickPiece::PIECE(PieceColor::BLACK), 4, 5, &mut board);
+
+    let mut expected_possible_moves: Vec<(usize, usize)> = vec![(3, 4), (4, 4), (5, 4)];
+
+    expected_possible_moves.sort();
+    let mut actual_possible_moves = pawn.moves_on_board();
+    actual_possible_moves.sort();
+
+    assert_eq!(actual_possible_moves, expected_possible_moves);
+}
+
+#[test]
+fn test_moves_on_board_white_has_moved() {
+    let mut board = common::create_board_with_piece(4, 2, QuickPiece::PIECE(PieceColor::WHITE));
+    let pawn = Pawn::new(4, 2, PieceColor::WHITE);
+
+    common::insert_quick_piece_into_board(QuickPiece::PIECE(PieceColor::WHITE), 4, 2, &mut board);
+
+    let mut expected_possible_moves: Vec<(usize, usize)> = vec![(3, 3), (4, 3), (5, 3)];
+
+    expected_possible_moves.sort();
+    let mut actual_possible_moves = pawn.moves_on_board();
+    actual_possible_moves.sort();
+
+    assert_eq!(actual_possible_moves, expected_possible_moves);
+}
