@@ -1,4 +1,4 @@
-use std::borrow::BorrowMut;
+use std::borrow::{Borrow, BorrowMut};
 use std::error::Error;
 use std::fmt;
 use std::str::Chars;
@@ -39,6 +39,62 @@ enum CheckOrCheckMate {
     Check,
     CheckMate,
     Neither,
+}
+
+fn parse_game_moves(
+    game_string: String,
+) -> Vec<(
+    String,
+    Result<
+        (
+            String,
+            (Option<String>, Option<String>),
+            (String, String),
+            MoveTypes,
+            CheckOrCheckMate,
+        ),
+        ParseError,
+    >,
+    Result<
+        (
+            String,
+            (Option<String>, Option<String>),
+            (String, String),
+            MoveTypes,
+            CheckOrCheckMate,
+        ),
+        ParseError,
+    >,
+)> {
+    // Then I want to move in sets of 3
+    let mut moves_vector = Vec::new();
+    let moves: Vec<String> = game_string
+        .split_whitespace()
+        .map(|x| String::from(x))
+        .collect();
+
+    for index in (0..moves.len() / 3)
+        .map(|x| x * 3)
+        .filter(|x| *x < moves.len())
+    {
+        if moves.len() - 1 > index + 2 {
+            continue;
+        }
+
+        let move_number: String = String::from(moves.get(index).unwrap());
+        moves_vector.push((
+            move_number,
+            parse_move(moves.get(index + 1).unwrap()),
+            parse_move(moves.get(index + 2).unwrap()),
+        ));
+
+        //move_number = String::from(possible_move).remove(possible_move.len() - 1) as usize,
+        //white_move = Some(parse_move(moves.get()));
+        //black_move = Some(parse_move(possible_move));
+        //moves_vector.push((move_number, white_move.unwrap(), black_move.unwrap()));
+    }
+
+    moves_vector
 }
 
 fn parse_move(
@@ -126,7 +182,7 @@ fn parse_piece_move(
                     MoveTypes::Move,
                     check_for_check_or_mate(&move_string),
                 )),
-                None => Ok((
+                Some('#') | Some('+') | None => Ok((
                     characters.get(0).unwrap().to_string(),
                     (None, None),
                     (
@@ -237,7 +293,7 @@ fn check_for_check_or_mate(move_string: &str) -> CheckOrCheckMate {
 #[cfg(test)]
 mod tests {
     use crate::parser::CheckOrCheckMate::CheckMate;
-    use crate::parser::{parse_move, CheckOrCheckMate, MoveTypes};
+    use crate::parser::{parse_game_moves, parse_move, CheckOrCheckMate, MoveTypes};
 
     // Pawn moves
 
@@ -382,5 +438,10 @@ mod tests {
             ),
             "A knight taking at d3 from e7"
         );
+    }
+
+    #[test]
+    fn test_parse_game() {
+        parse_game_moves("1. e4 e6 2. d4 d5 3. e5 c5 4. c3 Ne7 5. f4 Nbc6 6. Nf3 cxd4 7. cxd4 Nf5 8. g4 Nfe7 9. Nc3 Bd7 10. Bd3 Nb4 11. O-O Ng6 12. a3 Nxd3 13. Qxd3 Be7 14. f5 exf5 15. gxf5 Nf8 16. Nxd5 g5 17. f6 g4 18. fxe7 Qa5 19. exf8=Q+ Kxf8 20. Bh6+ Ke8 21. Nf6+ Ke7 22. Nd2 Be6 23. Bg5 Kf8 24. Nfe4 h6 25. Bh4 Qb6 26. Nc5 Bd5 27. b4 Rc8 28. Nd7+ Nd7+".to_string());
     }
 }
