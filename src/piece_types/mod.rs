@@ -1,4 +1,4 @@
-#[derive(Debug)]
+#[derive(Debug, PartialEq)]
 pub enum QuickPiece {
     PIECE(PieceColor),
     EMPTY,

@@ -8,6 +8,7 @@ pub struct Rook {
     pos_x: usize,
     pos_y: usize,
     piece_color: PieceColor,
+    has_moved: bool,
 }
 
 impl Rook {
@@ -16,7 +17,15 @@ impl Rook {
             pos_x,
             pos_y,
             piece_color,
+            has_moved: false,
         }
+    }
+
+    pub fn get_has_moved(&self) -> bool {
+        self.has_moved
+    }
+    pub fn set_has_moved(&mut self, value: bool) {
+        self.has_moved = value;
     }
 }
 

@@ -2,6 +2,7 @@ use chess::board::Board;
 use chess::piece_types;
 use chess::piece_types::QuickPiece::PIECE;
 use chess::piece_types::{PieceColor, QuickPiece};
+use chess::pieces::AnyPiece::King;
 use chess::pieces::{bishop, AnyPiece};
 
 /// Removes the QuickPiece that is at that given location and adds the piece to the appropriate living vector

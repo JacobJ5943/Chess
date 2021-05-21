@@ -100,9 +100,9 @@ pub fn will_move_be_in_check(
         .unwrap()
         .remove(y_start);
 
-    let mut living_pieces = match king_color_being_checked {
-        PieceColor::WHITE => &mut board.live_black_pieces,
-        PieceColor::BLACK => &mut board.live_white_pieces,
+    let mut living_pieces = match &last_move_color {
+        PieceColor::BLACK => &mut board.live_black_pieces,
+        PieceColor::WHITE => &mut board.live_white_pieces,
     };
 
     board

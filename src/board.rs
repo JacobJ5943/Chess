@@ -1,3 +1,4 @@
+use crate::game;
 use crate::parser::{MoveTypes, ParsedMove};
 use crate::piece_types::QuickPiece::PIECE;
 use crate::piece_types::{PieceColor, QuickPiece};
@@ -383,5 +384,146 @@ impl Board {
 
         self.move_piece(moving_x, moving_y, &current_move_color, end_x, end_y);
         self.last_move_color = PieceColor::opposite_color(&self.last_move_color);
+    }
+    pub fn can_castle_king(&mut self, king_color: &PieceColor, king_x_end: usize) -> bool {
+        let mut can_castle = false;
+        // 1. The king must not have moved
+        let king_coords = match king_color {
+            PieceColor::WHITE => self.white_king_position,
+            PieceColor::BLACK => self.black_king_position,
+        };
+
+        let king_has_moved = match self.find_piece_color(king_coords.0, king_coords.1, king_color) {
+            Some(king) => match king {
+                AnyPiece::King(king) => king.get_has_moved(),
+                _ => panic!("This should always be a king"),
+            },
+            None => panic!("This should always be a king"),
+        };
+
+        if !king_has_moved {
+            // @TODO feels like I could replace this match with something cleaner.
+            let check_rooks_and_empty = match king_x_end {
+                6 => {
+                    let rook = self.find_piece_color(7, king_coords.1, king_color);
+                    let rook_has_not_moved = match rook {
+                        Some(rook) => match rook {
+                            AnyPiece::Rook(rook) => !rook.get_has_moved(),
+                            _ => false,
+                        },
+                        None => false,
+                    };
+                    let no_pieces_in_path = self
+                        .position_board
+                        .get(5)
+                        .unwrap()
+                        .get(king_coords.1)
+                        .unwrap()
+                        == &QuickPiece::EMPTY
+                        && self
+                            .position_board
+                            .get(6)
+                            .unwrap()
+                            .get(king_coords.1)
+                            .unwrap()
+                            == &QuickPiece::EMPTY;
+
+                    rook_has_not_moved && no_pieces_in_path
+                }
+                2 => {
+                    let rook = self.find_piece_color(0, king_coords.1, king_color);
+                    let rook_has_not_moved = match rook {
+                        Some(rook) => match rook {
+                            AnyPiece::Rook(rook) => !rook.get_has_moved(),
+                            _ => false,
+                        },
+                        None => false,
+                    };
+                    let no_pieces_in_path = self
+                        .position_board
+                        .get(2)
+                        .unwrap()
+                        .get(king_coords.1)
+                        .unwrap()
+                        == &QuickPiece::EMPTY
+                        && self
+                            .position_board
+                            .get(3)
+                            .unwrap()
+                            .get(king_coords.1)
+                            .unwrap()
+                            == &QuickPiece::EMPTY;
+                    rook_has_not_moved && no_pieces_in_path
+                }
+                _ => false,
+            };
+            if check_rooks_and_empty {
+                // Then check if the king would be in check for those give positions
+                can_castle = match king_x_end {
+                    6 => {
+                        let space1_check = !game::will_move_be_in_check(
+                            king_coords.0,
+                            king_coords.1,
+                            king_x_end,
+                            king_coords.1,
+                            king_color,
+                            king_color,
+                            self,
+                        );
+                        let space2_check = !game::will_move_be_in_check(
+                            king_coords.0,
+                            king_coords.1,
+                            5,
+                            king_coords.1,
+                            king_color,
+                            king_color,
+                            self,
+                        );
+                        space1_check && space2_check
+                    }
+                    2 => {
+                        let space1_check = !game::will_move_be_in_check(
+                            king_coords.0,
+                            king_coords.1,
+                            king_x_end,
+                            king_coords.1,
+                            king_color,
+                            king_color,
+                            self,
+                        );
+                        let space2_check = !game::will_move_be_in_check(
+                            king_coords.0,
+                            king_coords.1,
+                            3,
+                            king_coords.1,
+                            king_color,
+                            king_color,
+                            self,
+                        );
+                        space1_check && space2_check
+                    }
+                    _ => false, // @TODO THis may be a mistake
+                }
+            }
+        }
+
+        can_castle
+    }
+
+    fn castle_king(&mut self, king_color: &PieceColor, king_x_end: usize) -> bool {
+        self.can_castle_king(king_color, king_x_end)
+    }
+}
+
+#[cfg(test)]
+mod tests {
+    use crate::pieces::king::King;
+    use crate::pieces::rook::Rook;
+    use crate::piece_types::PieceColor;
+
+    #[test]
+    fn test_can_castle_white_only_no_moves() {
+        let rook = Rook::new(0, 0, PieceColor::WHITE);
+        let king = King::new(0, 4, PieceColor::WHITE);
     }
 }
