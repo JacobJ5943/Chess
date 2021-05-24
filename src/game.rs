@@ -2,7 +2,6 @@ use crate::board::Board;
 use crate::piece_types::{PieceColor, QuickPiece};
 use crate::pieces::{AnyPiece, PieceMove};
 
-use crate::piece_types::QuickPiece::PIECE;
 use std::borrow::{Borrow, BorrowMut};
 use std::fmt::Error;
 
@@ -78,6 +77,8 @@ pub fn is_board_check_mate(last_move: &PieceColor, board: &mut Board) -> bool {
 }
 
 /// While this function takes in a mutable board it will not return until the board is back to the original state
+/// This move will return true if there exists a piece in the opposing live pieces vector that can move to the king_color_being_checked's location
+/// This will return false otherwise
 /// @TODO Think about where I want more input checks
 /// @TODO this feels kind of long
 pub fn will_move_be_in_check(
@@ -85,7 +86,7 @@ pub fn will_move_be_in_check(
     y_start: usize,
     x_end: usize,
     y_end: usize,
-    last_move_color: &PieceColor,
+    moving_piece_color: &PieceColor,
     king_color_being_checked: &PieceColor,
     board: &mut Board,
 ) -> bool {
@@ -94,37 +95,74 @@ pub fn will_move_be_in_check(
     assert!(0 <= y_end && y_end <= 7);
     assert!(0 <= x_end && x_end <= 7);
 
+    // Remove the starting piece from quick board
     let start_piece = board
         .position_board
         .get_mut(x_start)
         .unwrap()
         .remove(y_start);
 
-    let mut living_pieces = match &last_move_color {
+    let mut living_pieces = match &moving_piece_color {
         PieceColor::BLACK => &mut board.live_black_pieces,
         PieceColor::WHITE => &mut board.live_white_pieces,
     };
 
+    // insert empty in the starting pieces's place
     board
         .position_board
         .get_mut(x_start)
         .unwrap()
         .insert(y_start, QuickPiece::EMPTY);
-    let end_piece = board.position_board.get_mut(x_end).unwrap().remove(y_end);
 
+    // Remove the piece in the location the starting piece is moving to
+    let end_quick_piece = board.position_board.get_mut(x_end).unwrap().remove(y_end);
+
+    let mut live_end_piece = None;
+    let mut live_end_piece_color = None;
+    // This is removing the end piece from a living piece list if there was a piece at that location
+    match &end_quick_piece {
+        QuickPiece::KING(color) | QuickPiece::PIECE(color) => match color {
+            PieceColor::WHITE => {
+                let mut index = 0;
+                for piece in &board.live_white_pieces {
+                    if piece.get_pos() == (x_end, y_end) {
+                        live_end_piece_color = Some(PieceColor::WHITE);
+                        live_end_piece = Some(board.live_white_pieces.remove(index));
+                        break;
+                    }
+                    index = index + 1;
+                }
+            }
+            PieceColor::BLACK => {
+                let mut index = 0;
+                for piece in &board.live_black_pieces {
+                    if piece.get_pos() == (x_end, y_end) {
+                        live_end_piece_color = Some(PieceColor::BLACK);
+                        live_end_piece = Some(board.live_black_pieces.remove(index));
+                        break;
+                    }
+                    index = index + 1;
+                }
+            }
+        },
+        _ => (),
+    };
+
+    // insert the starting piece at the end location in the quick board
     board
         .position_board
         .get_mut(x_end)
         .unwrap()
         .insert(y_end, start_piece);
 
-    let mut found_piece = board
-        .find_piece_color(x_start, y_start, &last_move_color)
+    // Set the starting_pieces location in the AnyPiece struct
+    let mut live_moving_piece = board
+        .find_piece_color(x_start, y_start, &moving_piece_color)
         .unwrap();
+    live_moving_piece.set_pos(x_end, y_end);
 
-    found_piece.set_pos(x_end, y_end);
-    match found_piece {
-        AnyPiece::King(king) => match last_move_color {
+    match live_moving_piece {
+        AnyPiece::King(king) => match moving_piece_color {
             PieceColor::WHITE => board.white_king_position = (x_end, y_end),
             PieceColor::BLACK => board.black_king_position = (x_end, y_end),
         },
@@ -148,7 +186,16 @@ pub fn will_move_be_in_check(
         .position_board
         .get_mut(x_end)
         .unwrap()
-        .insert(y_end, end_piece);
+        .insert(y_end, end_quick_piece);
+
+    match live_end_piece {
+        Some(piece) => match live_end_piece_color.unwrap() {
+            PieceColor::WHITE => board.live_white_pieces.push(piece),
+            PieceColor::BLACK => board.live_black_pieces.push(piece),
+        },
+        _ => (),
+    };
+
     board
         .position_board
         .get_mut(x_start)
@@ -161,11 +208,12 @@ pub fn will_move_be_in_check(
         .insert(y_start, start_piece);
 
     let mut found_piece = board
-        .find_piece_color(x_end, y_end, &last_move_color)
+        .find_piece_color(x_end, y_end, &moving_piece_color)
         .unwrap();
     found_piece.set_pos(x_start, y_start);
+
     match found_piece {
-        AnyPiece::King(king) => match last_move_color {
+        AnyPiece::King(king) => match moving_piece_color {
             PieceColor::WHITE => board.white_king_position = king.get_pos(),
             PieceColor::BLACK => board.black_king_position = king.get_pos(),
         },

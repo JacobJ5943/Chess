@@ -379,10 +379,53 @@ impl Board {
         let current_move_color = PieceColor::opposite_color(&self.last_move_color);
         let mut moving_piece = self.find_start_piece_from_move(&parsed_move);
         let (moving_x, moving_y) = moving_piece.unwrap().get_pos();
-        let end_x = parser::parse_coordinate(&parsed_move.end_coords.0);
-        let end_y = parser::parse_coordinate(&parsed_move.end_coords.1);
 
-        self.move_piece(moving_x, moving_y, &current_move_color, end_x, end_y);
+        match &parsed_move.move_type {
+            MoveTypes::Castle(king_end_x) => {
+                self.castle_king(&current_move_color, *king_end_x);
+            }
+            _ => {
+                let mut moving_piece = self.find_start_piece_from_move(&parsed_move);
+                let (moving_x, moving_y) = moving_piece.unwrap().get_pos();
+                let end_x = parser::parse_coordinate(&parsed_move.end_coords.0);
+                let end_y = parser::parse_coordinate(&parsed_move.end_coords.1);
+
+                if !game::will_move_be_in_check(
+                    moving_x,
+                    moving_y,
+                    end_x,
+                    end_y,
+                    &current_move_color,
+                    &current_move_color,
+                    self,
+                ) {
+                    if let MoveTypes::Promote(piece_promote) = parsed_move.move_type {
+                        self.move_piece(
+                            moving_x,
+                            moving_y,
+                            &current_move_color,
+                            end_x,
+                            end_y,
+                            Some(piece_promote.as_str()),
+                        );
+                    } else {
+                        self.move_piece(
+                            moving_x,
+                            moving_y,
+                            &current_move_color,
+                            end_x,
+                            end_y,
+                            None,
+                        );
+                    }
+                } else {
+                    panic!(
+                        "This move is in valid.  You are in check if you do the move {:?}",
+                        parsed_move
+                    );
+                }
+            }
+        };
         self.last_move_color = PieceColor::opposite_color(&self.last_move_color);
     }
     pub fn can_castle_king(&mut self, king_color: &PieceColor, king_x_end: usize) -> bool {
@@ -511,15 +554,30 @@ impl Board {
     }
 
     fn castle_king(&mut self, king_color: &PieceColor, king_x_end: usize) -> bool {
-        self.can_castle_king(king_color, king_x_end)
+        if self.can_castle_king(king_color, king_x_end) {
+            // Move the king to king_x_end
+            let (king_x, king_y) = match king_color {
+                PieceColor::WHITE => self.white_king_position,
+                PieceColor::BLACK => self.black_king_position,
+            };
+            self.move_piece(king_x, king_y, king_color, king_x_end, king_y, None);
+            if king_x_end == 6 {
+                self.move_piece(7, king_y, king_color, 5, king_y, None);
+            } else {
+                self.move_piece(0, king_y, king_color, 3, king_y, None);
+            }
+            true
+        } else {
+            false
+        }
     }
 }
 
 #[cfg(test)]
 mod tests {
+    use crate::piece_types::PieceColor;
     use crate::pieces::king::King;
     use crate::pieces::rook::Rook;
-    use crate::piece_types::PieceColor;
 
     #[test]
     fn test_can_castle_white_only_no_moves() {
