@@ -72,12 +72,12 @@ fn test_can_move_black_forward() {
 
 #[test]
 fn test_can_move_forward_white_right() {
-    let board = common::create_board_with_piece(4, 4, QuickPiece::PIECE(PieceColor::WHITE));
+    let mut board = common::create_board_with_piece(4, 4, QuickPiece::PIECE(PieceColor::WHITE));
     let pawn = Pawn::new(4, 4, PieceColor::WHITE);
 
     assert_eq!(
         pawn.can_move(5, 5, &board),
-        true,
+        false,
         "Expected to be able to move to {}, {} from {},{}",
         5,
         5,
@@ -93,11 +93,22 @@ fn test_can_move_forward_white_right() {
         4,
         4
     );
+
+    common::insert_quick_piece_into_board(PIECE(PieceColor::BLACK), 5, 5, &mut board);
+    assert_eq!(
+        pawn.can_move(5, 5, &board),
+        true,
+        "Expected to be able to take to {}, {} from {},{}",
+        5,
+        5,
+        4,
+        4
+    );
 }
 
 #[test]
 fn test_can_move_forward_black_right() {
-    let board = common::create_board_with_piece(4, 4, QuickPiece::PIECE(PieceColor::BLACK));
+    let mut board = common::create_board_with_piece(4, 4, QuickPiece::PIECE(PieceColor::BLACK));
     let pawn = Pawn::new(4, 4, PieceColor::BLACK);
 
     assert_eq!(
@@ -110,10 +121,20 @@ fn test_can_move_forward_black_right() {
         4
     );
     assert_eq!(
-        pawn.can_move(3, 3, &board),
-        true,
-        "Expected to be able to move to {}, {} from {},{}",
+        pawn.can_move(5, 3, &board),
+        false,
+        "Expected not to be able to move to {}, {} from {},{}",
+        5,
         3,
+        4,
+        4
+    );
+    common::insert_quick_piece_into_board(PIECE(PieceColor::WHITE), 5, 3, &mut board);
+    assert_eq!(
+        pawn.can_move(5, 3, &board),
+        true,
+        "Expected to be able to take to {}, {} from {},{}",
+        5,
         3,
         4,
         4
@@ -154,13 +175,13 @@ fn test_can_move_out_of_bounds_black() {
 
 #[test]
 fn test_can_move_forward_white_left() {
-    let board = common::create_board_with_piece(4, 4, QuickPiece::PIECE(PieceColor::WHITE));
+    let mut board = common::create_board_with_piece(4, 4, QuickPiece::PIECE(PieceColor::WHITE));
     let pawn = Pawn::new(4, 4, PieceColor::WHITE);
 
     assert_eq!(
         pawn.can_move(3, 5, &board),
-        true,
-        "Expected to be able to move to {}, {} from {},{}",
+        false,
+        "Expected to not be able to move to {}, {} from {},{}",
         3,
         5,
         4,
@@ -175,11 +196,22 @@ fn test_can_move_forward_white_left() {
         4,
         4
     );
+
+    common::insert_quick_piece_into_board(PIECE(PieceColor::BLACK), 3, 5, &mut board);
+    assert_eq!(
+        pawn.can_move(3, 5, &board),
+        true,
+        "Expected to be able to take to {}, {} from {},{}",
+        3,
+        5,
+        4,
+        4
+    );
 }
 
 #[test]
 fn test_can_move_forward_black_left() {
-    let board = common::create_board_with_piece(4, 4, QuickPiece::PIECE(PieceColor::BLACK));
+    let mut board = common::create_board_with_piece(4, 4, QuickPiece::PIECE(PieceColor::BLACK));
     let pawn = Pawn::new(4, 4, PieceColor::BLACK);
 
     assert_eq!(
@@ -193,8 +225,18 @@ fn test_can_move_forward_black_left() {
     );
     assert_eq!(
         pawn.can_move(3, 3, &board),
+        false,
+        "Expected to not be able to move to {}, {} from {},{}",
+        3,
+        3,
+        4,
+        4
+    );
+    common::insert_quick_piece_into_board(PIECE(PieceColor::WHITE), 3, 3, &mut board);
+    assert_eq!(
+        pawn.can_move(3, 3, &board),
         true,
-        "Expected to be able to move to {}, {} from {},{}",
+        "Expected to be able to take to {}, {} from {},{}",
         3,
         3,
         4,

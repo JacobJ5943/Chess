@@ -1,3 +1,4 @@
+use crate::piece_types::PieceColor;
 use std::borrow::{Borrow, BorrowMut};
 use std::error::Error;
 use std::fmt;
@@ -58,7 +59,28 @@ impl Error for ParseError {
 pub enum MoveTypes {
     Move,
     Take,
-    Promote(String), // TODO Change this to something other than string later
+    Promote(String),
+    Castle(usize), // This usize is going to be the end x position for the king
+    FinalResult(GameResult),
+}
+
+// @TODO add stalemate eventually
+#[derive(Debug, Eq, PartialEq)]
+pub enum GameResult {
+    WhiteWin,
+    BlackWin,
+    Draw,
+}
+
+impl GameResult {
+    pub fn from_string(input_string: &String) -> GameResult {
+        match input_string.as_str() {
+            "1-0" => GameResult::WhiteWin,
+            "0-1" => GameResult::BlackWin,
+            "1/2-1/2" => GameResult::Draw,
+            _ => panic!("Error parsing gameResults from string"), // @TODO will need a way to remove the panic in the future.
+        }
+    }
 }
 
 #[derive(Debug, Eq, PartialEq)]
@@ -107,7 +129,60 @@ pub fn parse_move(move_string: &str) -> Result<ParsedMove, ParseError> {
     match characters.next().unwrap() {
         'a' | 'b' | 'c' | 'd' | 'e' | 'f' | 'g' | 'h' => parse_pawn_move(move_string),
         'K' | 'Q' | 'R' | 'B' | 'N' => parse_piece_move(move_string),
+        'O' => parse_castle(move_string),
+        '1' | '0' => parse_final_score(move_string),
         _ => Err(ParseError::new("Move did not start with a piece")),
+    }
+}
+
+fn parse_final_score(move_string: String) -> Result<ParsedMove, ParseError> {
+    Ok(ParsedMove::new(
+        String::from(""),
+        (None, None),
+        (String::from(""), String::from("")),
+        MoveTypes::FinalResult(GameResult::from_string(&move_string)),
+        check_for_check_or_mate(&move_string),
+    ))
+}
+
+fn parse_castle(move_string: String) -> Result<ParsedMove, ParseError> {
+    let characters: Vec<char> = move_string.chars().collect();
+    if characters.len() == 4 {
+        // We know it's a castle king side and a check or checkmate
+    }
+    match characters.len() {
+        3 => Ok(ParsedMove::new(
+            String::from("K"),
+            (None, None),
+            (String::from(""), String::from("")),
+            MoveTypes::Castle(6),
+            CheckOrCheckMate::Neither,
+        )),
+        4 => Ok(ParsedMove::new(
+            String::from("K"),
+            (None, None),
+            (String::from(""), String::from("")),
+            MoveTypes::Castle(6),
+            check_for_check_or_mate(&move_string),
+        )),
+        5 => Ok(ParsedMove::new(
+            String::from("K"),
+            (None, None),
+            (String::from(""), String::from("")),
+            MoveTypes::Castle(2),
+            CheckOrCheckMate::Neither,
+        )),
+        6 => Ok(ParsedMove::new(
+            String::from("K"),
+            (None, None),
+            (String::from(""), String::from("")),
+            MoveTypes::Castle(2),
+            check_for_check_or_mate(&move_string),
+        )),
+        _ => Err(ParseError::new(&format!(
+            "String that starting with O was not a castling length move:{:?}",
+            &move_string
+        ))),
     }
 }
 
@@ -188,7 +263,6 @@ fn parse_piece_move(move_string: String) -> Result<ParsedMove, ParseError> {
             )),
             _ => Err(ParseError::new("no")),
         },
-        'O' => Err(ParseError::new("CASTLE")),
         _ => Err(ParseError::new("oh no")),
     }
 }
@@ -211,7 +285,7 @@ pub fn parse_coordinate(coordinate: &str) -> usize {
         "6" => 5,
         "7" => 6,
         "8" => 7,
-        _ => panic!("Could nod parse {}", coordinate),
+        _ => panic!(format!("Could not parse coordinate {}", coordinate)),
     }
 }
 

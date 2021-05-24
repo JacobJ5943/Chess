@@ -89,14 +89,14 @@ impl PieceMove for Pawn {
             return false;
         }
 
-        let mut piece_on_location_result = true;
+        let mut piece_on_location_result = false;
         // @TODO this check could be refactored out so there is less doubling of work
         if check_if_piece_on_location(x_coord, y_coord, quick_board) {
-            if x_delta == 1 {
+            if x_delta == 1 && y_delta == 1 {
                 let piece = quick_board.get(x_coord).unwrap().get(y_coord).unwrap();
                 piece_on_location_result = match piece {
-                    QuickPiece::PIECE(color) => !(*color == self.piece_color),
-                    QuickPiece::KING(color) => !(*color == self.piece_color),
+                    QuickPiece::PIECE(color) => *color != self.piece_color,
+                    QuickPiece::KING(color) => *color != self.piece_color,
                     QuickPiece::EMPTY => true,
                 };
             }
@@ -104,8 +104,8 @@ impl PieceMove for Pawn {
             if x_delta == 0 {
                 let piece = quick_board.get(x_coord).unwrap().get(y_coord).unwrap();
                 piece_on_location_result = match piece {
-                    QuickPiece::PIECE(color) => !(*color == self.piece_color),
-                    QuickPiece::KING(color) => !(*color == self.piece_color),
+                    QuickPiece::PIECE(color) => false,
+                    QuickPiece::KING(color) => false,
                     QuickPiece::EMPTY => true,
                 };
             }

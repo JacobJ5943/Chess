@@ -106,47 +106,70 @@ impl Board {
             if piece.can_move(end_x, end_y, &self.position_board)
                 && Board::is_correct_piece_type(piece, &parsed_move.piece_char)
             {
-                if &String::from("P") == &parsed_move.piece_char {
-                    let delta_x =
-                        usize::max(end_x, piece.get_pos().0) - usize::min(end_x, piece.get_pos().0);
+                if Board::is_correct_moving_piece(parsed_move, piece) {
+                    if &String::from("P") == &parsed_move.piece_char {
+                        // @TODO this could probably be a function
+                        let delta_x = usize::max(end_x, piece.get_pos().0)
+                            - usize::min(end_x, piece.get_pos().0);
 
-                    let return_piece = match &parsed_move.move_type {
-                        MoveTypes::Take => {
-                            if delta_x == 1 {
-                                return_value = Some(piece);
-                            }
-                        }
-                        MoveTypes::Move => {
-                            if delta_x == 0 {
-                                return_value = Some(piece);
-                            }
-                        }
-                        MoveTypes::Promote(piece_symbol) => {
-                            match self.position_board.get(end_x).unwrap().get(end_y).unwrap() {
-                                QuickPiece::EMPTY => {
-                                    if delta_x == 0 {
-                                        return_value = Some(piece);
-                                    }
-                                }
-                                _ => {
-                                    if delta_x == 1 {
-                                        return_value = Some(piece);
-                                    }
+                        let return_piece = match &parsed_move.move_type {
+                            MoveTypes::Take => {
+                                if delta_x == 1 {
+                                    return_value = Some(piece);
                                 }
                             }
-                        }
-                        _ => (),
-                    };
-                } else {
-                    return_value = Some(piece);
+                            MoveTypes::Move => {
+                                if delta_x == 0 {
+                                    return_value = Some(piece);
+                                }
+                            }
+                            MoveTypes::Promote(piece_symbol) => {
+                                match self.position_board.get(end_x).unwrap().get(end_y).unwrap() {
+                                    QuickPiece::EMPTY => {
+                                        if delta_x == 0 {
+                                            return_value = Some(piece);
+                                        }
+                                    }
+                                    _ => {
+                                        if delta_x == 1 {
+                                            return_value = Some(piece);
+                                        }
+                                    }
+                                }
+                            }
+                            _ => (),
+                        };
+                    } else {
+                        return_value = Some(piece);
+                    }
                 }
             }
         }
         return_value
     }
 
+    fn is_correct_moving_piece(parsed_move: &ParsedMove, piece: &AnyPiece) -> bool {
+        let mut startin_x_match = true;
+        let mut startin_y_match = true;
+        if let Some(starting_x_coord) = &parsed_move.starting_coords.0 {
+            startin_x_match =
+                (parser::parse_coordinate(starting_x_coord.as_str()) == piece.get_pos().0)
+        };
+        if let Some(starting_y_coord) = &parsed_move.starting_coords.1 {
+            startin_y_match =
+                (parser::parse_coordinate(starting_y_coord.as_str()) == piece.get_pos().1)
+        };
+
+        startin_x_match && startin_y_match
+    }
+
     // @TODO ANother method that will have errors that need to be checked
-    fn remove_piece_color(&mut self, x_coord: usize, y_coord: usize, color_to_remove: &PieceColor) {
+    fn remove_piece_color(
+        &mut self,
+        x_coord: usize,
+        y_coord: usize,
+        color_to_remove: &PieceColor,
+    ) -> bool {
         let piece_list = match color_to_remove {
             PieceColor::WHITE => {
                 for (piece, index) in self
@@ -156,7 +179,7 @@ impl Board {
                 {
                     if piece.get_pos() == (x_coord, y_coord) {
                         self.live_white_pieces.remove(index);
-                        return;
+                        return true;
                     }
                 }
             }
@@ -168,11 +191,13 @@ impl Board {
                 {
                     if piece.get_pos() == (x_coord, y_coord) {
                         self.live_black_pieces.remove(index);
-                        return;
+                        return true;
                     }
                 }
             }
         };
+
+        false
     }
 
     pub fn find_piece_color(
@@ -234,10 +259,10 @@ impl Board {
         }
     }
     pub fn default_black_king_pos() -> (usize, usize) {
-        (7, 4)
+        (4, 7)
     }
     pub fn default_white_king_pos() -> (usize, usize) {
-        (0, 4)
+        (4, 0)
     }
     pub fn create_default_position_board() -> Vec<Vec<QuickPiece>> {
         // Cargo fmt is so gross
@@ -356,8 +381,8 @@ impl Board {
         moving_piece_color: &PieceColor,
         end_x: usize,
         end_y: usize,
+        promotion_piece: Option<&str>,
     ) {
-        // @TODO This is where we must promote a pawn if it is a promotion move
         self.move_in_quick_board(moving_x, moving_y, moving_piece_color, end_x, end_y);
 
         let color_being_taken = match moving_piece_color {
@@ -365,20 +390,67 @@ impl Board {
             PieceColor::BLACK => PieceColor::WHITE,
         };
 
-        self.remove_piece_color(end_x, end_y, &color_being_taken);
+        let _removed = self.remove_piece_color(end_x, end_y, &color_being_taken);
+        let mut debug = false;
+        if end_x == 5 && end_y == 5 {
+            debug = true;
+        }
 
         // Set the piece's new position
-        self.find_piece_color(moving_x, moving_y, moving_piece_color)
-            .unwrap()
-            .set_pos(end_x, end_y);
+        let mut moving_piece = self
+            .find_piece_color(moving_x, moving_y, moving_piece_color)
+            .unwrap();
+        &moving_piece.set_pos(end_x, end_y);
+
+        match moving_piece {
+            AnyPiece::King(_king) => {
+                match moving_piece_color {
+                    PieceColor::BLACK => self.black_king_position = (end_x, end_y),
+                    PieceColor::WHITE => self.white_king_position = (end_x, end_y),
+                };
+            }
+            AnyPiece::Pawn(pawn) => {
+                if end_y == 7 {
+                    self.promote_pawn_at(
+                        end_x,
+                        end_y,
+                        moving_piece_color,
+                        promotion_piece.unwrap(),
+                    );
+                }
+            }
+            _ => (),
+        };
+    }
+
+    // @TODO this would be another prime function for adding Result to
+    fn promote_pawn_at(
+        &mut self,
+        x_coord: usize,
+        y_coord: usize,
+        pawn_color: &PieceColor,
+        promotion_piece: &str,
+    ) {
+        // first remove the pawn that is at that location
+        self.remove_piece_color(x_coord, y_coord, pawn_color);
+        let promoted_piece = match promotion_piece {
+            "N" => AnyPiece::Knight(Knight::new(x_coord, y_coord, pawn_color.clone())),
+            "Q" => AnyPiece::Queen(Queen::new(x_coord, y_coord, pawn_color.clone())),
+            "B" => AnyPiece::Bishop(Bishop::new(x_coord, y_coord, pawn_color.clone())),
+            "R" => AnyPiece::Rook(Rook::new(x_coord, y_coord, pawn_color.clone())),
+            _ => panic!("AAAAAAAAAAAAAA in promoting pawn "),
+        };
+
+        match pawn_color {
+            PieceColor::WHITE => self.live_white_pieces.push(promoted_piece),
+            PieceColor::BLACK => self.live_black_pieces.push(promoted_piece),
+        };
     }
 
     // Right now this I am assuming that this function is only used by my tests or after a move has been deemed valid
     // @TODO Maybe add if move says check or check mate make that check too
     pub fn play_move(&mut self, parsed_move: ParsedMove) {
         let current_move_color = PieceColor::opposite_color(&self.last_move_color);
-        let mut moving_piece = self.find_start_piece_from_move(&parsed_move);
-        let (moving_x, moving_y) = moving_piece.unwrap().get_pos();
 
         match &parsed_move.move_type {
             MoveTypes::Castle(king_end_x) => {

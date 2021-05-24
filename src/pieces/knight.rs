@@ -33,6 +33,9 @@ impl PieceMove for Knight {
         let x_delta = usize::max(x_coord, self.pos_x) - usize::min(x_coord, self.pos_x);
         let y_delta = usize::max(y_coord, self.pos_y) - usize::min(y_coord, self.pos_y);
 
+        if x_delta > 2 || x_delta == 0 || y_delta > 2 || y_delta == 0 {
+            return false;
+        }
         if (x_delta == 2 && y_delta != 1) || (x_delta == 1 && y_delta != 2) {
             return false;
         }
