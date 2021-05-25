@@ -268,6 +268,6 @@ fn test_check_mate() {
     assert_eq!(
         game::is_board_check_mate(&PieceColor::BLACK, &mut board),
         true,
-        "With 1 bishop, and 1 queen, and 2 rooks The board should be in check, but not mate."
+        "With 1 bishop, and 1 queen, and 2 rooks The board should be in checkmate."
     );
 }

@@ -64,20 +64,20 @@ impl PieceMove for Knight {
             }
         }
 
-        if let 2 | 3 | 4 | 5 | 6 | 7= self.pos_x  {
+        if let 2 | 3 | 4 | 5 | 6 | 7 = self.pos_x {
             if let 2 | 3 | 4 | 5 | 6 | 7 = self.pos_y + 1 {
                 possible_moves.push((self.pos_x - 2, self.pos_y + 1));
             }
-            if let  1 | 2 | 3 | 4 | 5 | 6 | 7 = self.pos_y {
+            if let 1 | 2 | 3 | 4 | 5 | 6 | 7 = self.pos_y {
                 possible_moves.push((self.pos_x - 2, self.pos_y - 1));
             }
         }
 
-        if let 2 | 3 | 4 | 5 | 6 | 7= self.pos_y {
+        if let 2 | 3 | 4 | 5 | 6 | 7 = self.pos_y {
             if let 2 | 3 | 4 | 5 | 6 | 7 = self.pos_x + 1 {
                 possible_moves.push((self.pos_x + 1, self.pos_y - 2));
             }
-            if let  1 | 2 | 3 | 4 | 5 | 6 | 7= self.pos_x {
+            if let 1 | 2 | 3 | 4 | 5 | 6 | 7 = self.pos_x {
                 possible_moves.push((self.pos_x - 1, self.pos_y - 2));
             }
         }

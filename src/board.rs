@@ -11,6 +11,33 @@ use crate::pieces::rook::Rook;
 use crate::pieces::{AnyPiece, PieceMove};
 use crate::{parser, pieces};
 use std::any::Any;
+use std::error::Error;
+use std::fmt;
+
+#[derive(Debug)]
+pub struct MoveError {
+    details: String,
+}
+
+impl MoveError {
+    pub(crate) fn new(msg: &str) -> MoveError {
+        MoveError {
+            details: msg.to_string(),
+        }
+    }
+}
+
+impl fmt::Display for MoveError {
+    fn fmt(&self, f: &mut fmt::Formatter) -> fmt::Result {
+        write!(f, "{}", self.details)
+    }
+}
+
+impl Error for MoveError {
+    fn description(&self) -> &str {
+        &self.details
+    }
+}
 
 pub struct Board {
     pub position_board: Vec<Vec<QuickPiece>>,
@@ -449,7 +476,7 @@ impl Board {
 
     // Right now this I am assuming that this function is only used by my tests or after a move has been deemed valid
     // @TODO Maybe add if move says check or check mate make that check too
-    pub fn play_move(&mut self, parsed_move: ParsedMove) {
+    pub fn play_move(&mut self, parsed_move: ParsedMove) -> Result<(), MoveError> {
         let current_move_color = PieceColor::opposite_color(&self.last_move_color);
 
         match &parsed_move.move_type {
@@ -458,6 +485,16 @@ impl Board {
             }
             _ => {
                 let mut moving_piece = self.find_start_piece_from_move(&parsed_move);
+                if let None = moving_piece {
+                    return Err(MoveError::new(
+                        format!(
+                            "The moving piece could not be found for the move {:?}",
+                            &parsed_move
+                        )
+                        .as_str(),
+                    ));
+                }
+
                 let (moving_x, moving_y) = moving_piece.unwrap().get_pos();
                 let end_x = parser::parse_coordinate(&parsed_move.end_coords.0);
                 let end_y = parser::parse_coordinate(&parsed_move.end_coords.1);
@@ -491,15 +528,20 @@ impl Board {
                         );
                     }
                 } else {
-                    panic!(
-                        "This move is in valid.  You are in check if you do the move {:?}",
-                        parsed_move
-                    );
+                    return Err(MoveError::new(
+                        format!(
+                            "This move is in valid.  You are in check if you do the move {:?}",
+                            &parsed_move
+                        )
+                        .as_str(),
+                    ));
                 }
             }
         };
         self.last_move_color = PieceColor::opposite_color(&self.last_move_color);
+        Ok(())
     }
+
     pub fn can_castle_king(&mut self, king_color: &PieceColor, king_x_end: usize) -> bool {
         let mut can_castle = false;
         // 1. The king must not have moved

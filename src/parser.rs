@@ -249,7 +249,16 @@ fn parse_piece_move(move_string: String) -> Result<ParsedMove, ParseError> {
                     MoveTypes::Move,
                     check_for_check_or_mate(&move_string),
                 )),
-                _ => Err(ParseError::new("oh no")),
+                _ => Ok(ParsedMove::new(
+                    characters.get(0).unwrap().to_string(),
+                    (None, None),
+                    (
+                        characters.get(1).unwrap().to_string(),
+                        characters.get(2).unwrap().to_string(),
+                    ),
+                    MoveTypes::Move,
+                    check_for_check_or_mate(&move_string),
+                )),
             },
             'x' => Ok(ParsedMove::new(
                 characters.get(0).unwrap().to_string(),
