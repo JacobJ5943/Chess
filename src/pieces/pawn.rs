@@ -1,5 +1,4 @@
 use crate::piece_types::{PieceColor, QuickPiece};
-use crate::pieces::check_if_piece_on_location;
 use crate::pieces::coord_on_board;
 use crate::pieces::PieceMove;
 use std::cmp::max;
@@ -91,24 +90,21 @@ impl PieceMove for Pawn {
 
         let mut piece_on_location_result = false;
         // @TODO this check could be refactored out so there is less doubling of work
-        if check_if_piece_on_location(x_coord, y_coord, quick_board) {
-            if x_delta == 1 && y_delta == 1 {
-                let piece = quick_board.get(x_coord).unwrap().get(y_coord).unwrap();
-                piece_on_location_result = match piece {
-                    QuickPiece::PIECE(color) => *color != self.piece_color,
-                    QuickPiece::KING(color) => *color != self.piece_color,
-                    QuickPiece::EMPTY => true,
-                };
-            }
-        } else {
-            if x_delta == 0 {
-                let piece = quick_board.get(x_coord).unwrap().get(y_coord).unwrap();
-                piece_on_location_result = match piece {
-                    QuickPiece::PIECE(_) => false,
-                    QuickPiece::KING(_) => false,
-                    QuickPiece::EMPTY => true,
-                };
-            }
+        if x_delta == 1 && y_delta == 1 {
+            let piece = quick_board.get(x_coord).unwrap().get(y_coord).unwrap();
+            piece_on_location_result = match piece {
+                QuickPiece::PIECE(color) => *color != self.piece_color,
+                QuickPiece::KING(color) => *color != self.piece_color,
+                QuickPiece::EMPTY => true,
+            };
+        }
+        if x_delta == 0 {
+            let piece = quick_board.get(x_coord).unwrap().get(y_coord).unwrap();
+            piece_on_location_result = match piece {
+                QuickPiece::PIECE(_) => false,
+                QuickPiece::KING(_) => false,
+                QuickPiece::EMPTY => true,
+            };
         }
         piece_on_location_result
     }

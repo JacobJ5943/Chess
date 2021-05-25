@@ -77,7 +77,7 @@ fn test_can_move_forward_white_right() {
 
     assert_eq!(
         pawn.can_move(5, 5, &board),
-        false,
+        true,
         "Expected to be able to move to {}, {} from {},{}",
         5,
         5,
@@ -122,8 +122,8 @@ fn test_can_move_forward_black_right() {
     );
     assert_eq!(
         pawn.can_move(5, 3, &board),
-        false,
-        "Expected not to be able to move to {}, {} from {},{}",
+        true,
+        "Expected to be able to move to {}, {} from {},{}",
         5,
         3,
         4,
@@ -180,8 +180,8 @@ fn test_can_move_forward_white_left() {
 
     assert_eq!(
         pawn.can_move(3, 5, &board),
-        false,
-        "Expected to not be able to move to {}, {} from {},{}",
+        true,
+        "Expected to be able to move to {}, {} from {},{}",
         3,
         5,
         4,
@@ -225,8 +225,8 @@ fn test_can_move_forward_black_left() {
     );
     assert_eq!(
         pawn.can_move(3, 3, &board),
-        false,
-        "Expected to not be able to move to {}, {} from {},{}",
+        true,
+        "Expected to be able to move to {}, {} from {},{}",
         3,
         3,
         4,
