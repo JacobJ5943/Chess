@@ -1,6 +1,6 @@
 use crate::game;
+use crate::parser;
 use crate::parser::{MoveTypes, ParsedMove};
-use crate::piece_types::QuickPiece::PIECE;
 use crate::piece_types::{PieceColor, QuickPiece};
 use crate::pieces::bishop::Bishop;
 use crate::pieces::king::King;
@@ -9,8 +9,6 @@ use crate::pieces::pawn::Pawn;
 use crate::pieces::queen::Queen;
 use crate::pieces::rook::Rook;
 use crate::pieces::{AnyPiece, PieceMove};
-use crate::{parser, pieces};
-use std::any::Any;
 use std::error::Error;
 use std::fmt;
 
@@ -138,8 +136,7 @@ impl Board {
                         // @TODO this could probably be a function
                         let delta_x = usize::max(end_x, piece.get_pos().0)
                             - usize::min(end_x, piece.get_pos().0);
-
-                        let return_piece = match &parsed_move.move_type {
+                        match &parsed_move.move_type {
                             MoveTypes::Take => {
                                 if delta_x == 1 {
                                     return_value = Some(piece);
@@ -150,7 +147,7 @@ impl Board {
                                     return_value = Some(piece);
                                 }
                             }
-                            MoveTypes::Promote(piece_symbol) => {
+                            MoveTypes::Promote(_) => {
                                 match self.position_board.get(end_x).unwrap().get(end_y).unwrap() {
                                     QuickPiece::EMPTY => {
                                         if delta_x == 0 {
@@ -180,11 +177,11 @@ impl Board {
         let mut startin_y_match = true;
         if let Some(starting_x_coord) = &parsed_move.starting_coords.0 {
             startin_x_match =
-                (parser::parse_coordinate(starting_x_coord.as_str()) == piece.get_pos().0)
+                parser::parse_coordinate(starting_x_coord.as_str()) == piece.get_pos().0
         };
         if let Some(starting_y_coord) = &parsed_move.starting_coords.1 {
             startin_y_match =
-                (parser::parse_coordinate(starting_y_coord.as_str()) == piece.get_pos().1)
+                parser::parse_coordinate(starting_y_coord.as_str()) == piece.get_pos().1
         };
 
         startin_x_match && startin_y_match
@@ -197,7 +194,7 @@ impl Board {
         y_coord: usize,
         color_to_remove: &PieceColor,
     ) -> bool {
-        let piece_list = match color_to_remove {
+        match color_to_remove {
             PieceColor::WHITE => {
                 for (piece, index) in self
                     .live_white_pieces
@@ -272,19 +269,6 @@ impl Board {
         found_movement
     }
 
-    // @TODO What is this function again?
-    fn create_default_pieces(color: &PieceColor) {
-        // Create pawns
-        //let mut live_pieces: Vec<Piece> = Vec::with_capacity(16); // TODO This should probably be a const config thing somewhere
-        for _ in 0..8 {
-            // Again I should do more config things in the future.
-
-            //live_pieces.push(Piece::new(color));
-        }
-        for _ in 0..8 {
-            //live_pieces.push(Piece::new(color));
-        }
-    }
     pub fn default_black_king_pos() -> (usize, usize) {
         (4, 7)
     }
@@ -381,11 +365,11 @@ impl Board {
         &mut self,
         moving_x: usize,
         moving_y: usize,
-        moving_piece_color: &PieceColor,
+        _moving_piece_color: &PieceColor, // @TODO remove this from the funciton definition then probably
         end_x: usize,
         end_y: usize,
     ) {
-        let mut starting_piece = self
+        let starting_piece = self
             .position_board
             .get_mut(moving_x)
             .unwrap()
@@ -418,13 +402,9 @@ impl Board {
         };
 
         let _removed = self.remove_piece_color(end_x, end_y, &color_being_taken);
-        let mut debug = false;
-        if end_x == 5 && end_y == 5 {
-            debug = true;
-        }
 
         // Set the piece's new position
-        let mut moving_piece = self
+        let moving_piece = self
             .find_piece_color(moving_x, moving_y, moving_piece_color)
             .unwrap();
         &moving_piece.set_pos(end_x, end_y);
@@ -436,7 +416,7 @@ impl Board {
                     PieceColor::WHITE => self.white_king_position = (end_x, end_y),
                 };
             }
-            AnyPiece::Pawn(pawn) => {
+            AnyPiece::Pawn(_) => {
                 if end_y == 7 {
                     self.promote_pawn_at(
                         end_x,
@@ -484,7 +464,7 @@ impl Board {
                 self.castle_king(&current_move_color, *king_end_x);
             }
             _ => {
-                let mut moving_piece = self.find_start_piece_from_move(&parsed_move);
+                let moving_piece = self.find_start_piece_from_move(&parsed_move);
                 if let None = moving_piece {
                     return Err(MoveError::new(
                         format!(
@@ -695,7 +675,8 @@ mod tests {
 
     #[test]
     fn test_can_castle_white_only_no_moves() {
-        let rook = Rook::new(0, 0, PieceColor::WHITE);
-        let king = King::new(0, 4, PieceColor::WHITE);
+        // @TODO These need to be implemented
+        let _rook = Rook::new(0, 0, PieceColor::WHITE);
+        let _king = King::new(0, 4, PieceColor::WHITE);
     }
 }

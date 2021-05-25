@@ -1,5 +1,4 @@
 mod common;
-use chess::piece_types::QuickPiece::PIECE;
 use chess::piece_types::{PieceColor, QuickPiece};
 use chess::pieces::king::King;
 use chess::pieces::PieceMove;
@@ -225,7 +224,7 @@ fn test_can_move_capture_opposing_color() {
 
 #[test]
 fn test_can_move_out_of_bounds_right() {
-    let mut board = common::create_board_with_piece(7, 7, QuickPiece::PIECE(PieceColor::BLACK));
+    let board = common::create_board_with_piece(7, 7, QuickPiece::PIECE(PieceColor::BLACK));
     let king = King::new(7, 7, PieceColor::BLACK);
 
     assert_eq!(
@@ -241,7 +240,7 @@ fn test_can_move_out_of_bounds_right() {
 
 #[test]
 fn test_can_move_out_of_bounds_up() {
-    let mut board = common::create_board_with_piece(7, 7, QuickPiece::PIECE(PieceColor::BLACK));
+    let board = common::create_board_with_piece(7, 7, QuickPiece::PIECE(PieceColor::BLACK));
     let king = King::new(7, 7, PieceColor::BLACK);
 
     assert_eq!(

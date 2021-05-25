@@ -1,4 +1,3 @@
-use chess::board;
 use chess::board::Board;
 use chess::piece_types::PieceColor;
 use chess::piece_types::QuickPiece;

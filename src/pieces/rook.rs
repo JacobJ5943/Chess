@@ -82,7 +82,7 @@ impl PieceMove for Rook {
     fn moves_on_board(&self) -> Vec<(usize, usize)> {
         let mut moves_vector: Vec<(usize, usize)> = Vec::new();
 
-        let right = ((self.pos_x + 1)..8);
+        let right = (self.pos_x + 1)..8;
         let left = (0..self.pos_x).rev();
         let up = (self.pos_y + 1)..8;
         let down = (0..self.pos_y).rev();

@@ -123,8 +123,8 @@ fn check_if_piece_on_location(
 ) -> bool {
     let piece = quick_board.get(x_coord).unwrap().get(y_coord).unwrap();
     match piece {
-        piece_types::QuickPiece::PIECE(color) => true,
-        piece_types::QuickPiece::KING(color) => true,
+        piece_types::QuickPiece::PIECE(_) => true,
+        piece_types::QuickPiece::KING(_) => true,
         _ => false,
     }
 }

@@ -1,12 +1,7 @@
 use crate::board::{Board, MoveError};
-use crate::parser::{parse_move, ParsedMove};
-use crate::piece_types::QuickPiece::PIECE;
+use crate::parser::parse_move;
 use crate::piece_types::{PieceColor, QuickPiece};
 use crate::pieces::{AnyPiece, PieceMove};
-use std::any::Any;
-use std::borrow::{Borrow, BorrowMut};
-use std::error;
-use std::fmt::{Display, Error};
 use std::io;
 
 // This function only checks the color opposing the last move.  This is because one cannot make a
@@ -37,15 +32,7 @@ pub fn is_board_in_check(last_move: &PieceColor, board: &Board) -> bool {
     false
 }
 
-pub fn play_move(board: &Board) -> Result<(), Error> {
-    Ok(())
-}
-
 pub fn is_board_check_mate(last_move: &PieceColor, board: &mut Board) -> bool {
-    let opposing_king = match last_move {
-        PieceColor::WHITE => board.black_king_position,
-        PieceColor::BLACK => board.white_king_position,
-    };
     let opposing_king_color = match last_move {
         PieceColor::WHITE => PieceColor::BLACK,
         PieceColor::BLACK => PieceColor::WHITE,
@@ -60,9 +47,6 @@ pub fn is_board_check_mate(last_move: &PieceColor, board: &mut Board) -> bool {
     false
 }
 
-fn can_piece_move(piece: &AnyPiece, end_x: usize, end_y: usize, game_board: &mut Board) -> bool {
-    piece.can_move(end_x, end_y, &mut game_board.position_board)
-}
 fn can_any_piece_move(piece_color: &PieceColor, game_board: &mut Board) -> bool {
     let all_possible_moves: Vec<((usize, usize), Vec<(usize, usize)>)> = match piece_color {
         PieceColor::WHITE => {
@@ -146,22 +130,12 @@ pub fn will_move_be_in_check(
     king_color_being_checked: &PieceColor,
     board: &mut Board,
 ) -> bool {
-    assert!(0 <= x_start && x_start <= 7);
-    assert!(0 <= y_start && y_start <= 7);
-    assert!(0 <= y_end && y_end <= 7);
-    assert!(0 <= x_end && x_end <= 7);
-
     // Remove the starting piece from quick board
     let start_piece = board
         .position_board
         .get_mut(x_start)
         .unwrap()
         .remove(y_start);
-
-    let mut living_pieces = match &moving_piece_color {
-        PieceColor::BLACK => &mut board.live_black_pieces,
-        PieceColor::WHITE => &mut board.live_white_pieces,
-    };
 
     // insert empty in the starting pieces's place
     board
@@ -212,13 +186,13 @@ pub fn will_move_be_in_check(
         .insert(y_end, start_piece);
 
     // Set the starting_pieces location in the AnyPiece struct
-    let mut live_moving_piece = board
+    let live_moving_piece = board
         .find_piece_color(x_start, y_start, &moving_piece_color)
         .unwrap();
     live_moving_piece.set_pos(x_end, y_end);
 
     match live_moving_piece {
-        AnyPiece::King(king) => match moving_piece_color {
+        AnyPiece::King(_) => match moving_piece_color {
             PieceColor::WHITE => board.white_king_position = (x_end, y_end),
             PieceColor::BLACK => board.black_king_position = (x_end, y_end),
         },
@@ -263,7 +237,7 @@ pub fn will_move_be_in_check(
         .unwrap()
         .insert(y_start, start_piece);
 
-    let mut found_piece = board
+    let found_piece = board
         .find_piece_color(x_end, y_end, &moving_piece_color)
         .unwrap();
     found_piece.set_pos(x_start, y_start);
@@ -276,15 +250,6 @@ pub fn will_move_be_in_check(
         _ => (),
     };
     found_check
-}
-
-fn does_piece_check(
-    piece: AnyPiece,
-    opposing_king_x: usize,
-    opposing_king_y: usize,
-    quick_board: &Vec<Vec<QuickPiece>>,
-) -> bool {
-    piece.can_move(opposing_king_x, opposing_king_y, &quick_board)
 }
 
 fn get_input_string_from_user() -> String {

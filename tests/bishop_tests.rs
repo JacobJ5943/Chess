@@ -1,5 +1,4 @@
 mod common;
-use chess::piece_types::QuickPiece::PIECE;
 use chess::piece_types::{PieceColor, QuickPiece};
 use chess::pieces::bishop::Bishop;
 use chess::pieces::PieceMove;
@@ -431,6 +430,7 @@ fn test_moves_on_board_0_0() {
     assert_eq!(actual_possible_moves, expected_possible_moves);
 }
 
+#[test]
 fn test_moves_on_board_0_7() {
     let mut board = common::create_board_with_piece(0, 7, QuickPiece::PIECE(PieceColor::BLACK));
     let bishop = Bishop::new(0, 7, PieceColor::BLACK);
@@ -445,6 +445,7 @@ fn test_moves_on_board_0_7() {
     assert_eq!(actual_possible_moves, expected_possible_moves);
 }
 
+#[test]
 fn test_moves_on_board_7_0() {
     let mut board = common::create_board_with_piece(7, 0, QuickPiece::PIECE(PieceColor::BLACK));
     let bishop = Bishop::new(7, 0, PieceColor::BLACK);
@@ -459,6 +460,7 @@ fn test_moves_on_board_7_0() {
     assert_eq!(actual_possible_moves, expected_possible_moves);
 }
 
+#[test]
 fn test_moves_on_board_7_7() {
     let mut board = common::create_board_with_piece(7, 7, QuickPiece::PIECE(PieceColor::BLACK));
     let bishop = Bishop::new(7, 7, PieceColor::BLACK);

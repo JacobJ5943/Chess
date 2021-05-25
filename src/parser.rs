@@ -1,8 +1,5 @@
-use crate::piece_types::PieceColor;
-use std::borrow::{Borrow, BorrowMut};
 use std::error::Error;
 use std::fmt;
-use std::str::Chars;
 
 #[derive(Debug, PartialEq)]
 pub struct ParsedMove {
@@ -368,7 +365,6 @@ fn check_for_check_or_mate(move_string: &str) -> CheckOrCheckMate {
 }
 #[cfg(test)]
 mod tests {
-    use crate::parser::CheckOrCheckMate::CheckMate;
     use crate::parser::{parse_game_moves, parse_move, CheckOrCheckMate, MoveTypes, ParsedMove};
 
     // Pawn moves
@@ -519,6 +515,6 @@ mod tests {
     #[test]
     fn test_parse_game() {
         //https://lichess.org/m45sueue
-        let result = parse_game_moves("1. e4 e6 2. d4 d5 3. e5 c5 4. c3 Ne7 5. f4 Nbc6 6. Nf3 cxd4 7. cxd4 Nf5 8. g4 Nfe7 9. Nc3 Bd7 10. Bd3 Nb4 11. O-O Ng6 12. a3 Nxd3 13. Qxd3 Be7 14. f5 exf5 15. gxf5 Nf8 16. Nxd5 g5 17. f6 g4 18. fxe7 Qa5 19. exf8=Q+ Kxf8 20. Bh6+ Ke8 21. Nf6+ Ke7 22. Nd2 Be6 23. Bg5 Kf8 24. Nfe4 h6 25. Bh4 Qb6 26. Nc5 Bd5 27. b4 Rc8 28. Nd7+ Nd7+".to_string());
+        let _result = parse_game_moves("1. e4 e6 2. d4 d5 3. e5 c5 4. c3 Ne7 5. f4 Nbc6 6. Nf3 cxd4 7. cxd4 Nf5 8. g4 Nfe7 9. Nc3 Bd7 10. Bd3 Nb4 11. O-O Ng6 12. a3 Nxd3 13. Qxd3 Be7 14. f5 exf5 15. gxf5 Nf8 16. Nxd5 g5 17. f6 g4 18. fxe7 Qa5 19. exf8=Q+ Kxf8 20. Bh6+ Ke8 21. Nf6+ Ke7 22. Nd2 Be6 23. Bg5 Kf8 24. Nfe4 h6 25. Bh4 Qb6 26. Nc5 Bd5 27. b4 Rc8 28. Nd7+ Nd7+".to_string());
     }
 }

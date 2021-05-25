@@ -87,7 +87,7 @@ impl PieceMove for Queen {
         let lower_right = ((self.pos_x + 1)..8).zip((0..self.pos_y).rev());
         let upper_left = (0..self.pos_x).rev().zip(self.pos_y + 1..8);
         let lower_left = (0..self.pos_x).rev().zip((0..self.pos_y).rev());
-        let right = ((self.pos_x + 1)..8);
+        let right = (self.pos_x + 1)..8;
         let left = (0..self.pos_x).rev();
         let up = (self.pos_y + 1)..8;
         let down = (0..self.pos_y).rev();

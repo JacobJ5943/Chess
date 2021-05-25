@@ -1,5 +1,4 @@
 mod common;
-use chess::piece_types::QuickPiece::PIECE;
 use chess::piece_types::{PieceColor, QuickPiece};
 use chess::pieces::knight::Knight;
 use chess::pieces::PieceMove;

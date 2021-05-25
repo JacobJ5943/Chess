@@ -1,11 +1,10 @@
 use chess::board::Board;
 use chess::piece_types;
-use chess::piece_types::QuickPiece::PIECE;
 use chess::piece_types::{PieceColor, QuickPiece};
-use chess::pieces::AnyPiece::King;
-use chess::pieces::{bishop, AnyPiece};
+use chess::pieces::AnyPiece;
 
 /// Removes the QuickPiece that is at that given location and adds the piece to the appropriate living vector
+#[allow(dead_code)]
 pub fn insert_piece_into_board(
     piece: AnyPiece,
     piece_color: &PieceColor,
@@ -49,6 +48,7 @@ pub fn insert_piece_into_board(
 }
 
 // inserts a piece into the quick board and removes the piece that was there before
+#[allow(dead_code)]
 pub fn insert_quick_piece_into_board(
     piece: QuickPiece,
     x_coord: usize,
@@ -110,7 +110,6 @@ pub fn create_board_with_piece(
 mod tests {
     use super::create_board_with_piece;
     use chess::piece_types::{PieceColor, QuickPiece};
-    use chess::pieces::bishop;
 
     #[test]
     fn test_create_board_with_piece_0_0() {
@@ -121,16 +120,17 @@ mod tests {
             assert_eq!(board.len(), 8)
         }
         let piece = board.get(0).unwrap().get(0).unwrap();
-        let expected_piece = QuickPiece::PIECE(PieceColor::WHITE);
+        //let expected_piece = QuickPiece::PIECE(PieceColor::WHITE);
 
         match piece {
             QuickPiece::PIECE(color) => match color {
-                WHITE => assert!(true),
+                PieceColor::WHITE => assert!(true),
+                PieceColor::BLACK => {
+                    assert!(false, "Expected Piece of Color WHITE, but found BLACK")
+                }
             },
             QuickPiece::EMPTY => assert!(false, "Expected Piece of color WHITE, but found EMPTY"),
-            QuickPiece::KING(color) => {
-                assert!(false, "Expected Piece of color WHITE, but found KING")
-            }
+            QuickPiece::KING(_) => assert!(false, "Expected Piece of color WHITE, but found KING"),
         }
     }
 
@@ -145,9 +145,7 @@ mod tests {
         let piece = board.get(0).unwrap().get(0).unwrap();
 
         match piece {
-            QuickPiece::PIECE(color) => {
-                assert!(false, "Expected KING of color BLACK, but found PIECE")
-            }
+            QuickPiece::PIECE(_) => assert!(false, "Expected KING of color BLACK, but found PIECE"),
             QuickPiece::EMPTY => assert!(false, "Expected KING of color BLACK, but found EMPTY"),
             QuickPiece::KING(color) => match color {
                 PieceColor::WHITE => assert!(
@@ -182,9 +180,7 @@ mod tests {
         let piece = board.get(7).unwrap().get(7).unwrap();
 
         match piece {
-            QuickPiece::PIECE(color) => {
-                assert!(false, "Expected KING of color BLACK, but found PIECE")
-            }
+            QuickPiece::PIECE(_) => assert!(false, "Expected KING of color BLACK, but found PIECE"),
             QuickPiece::EMPTY => assert!(false, "Expected KING of color BLACK, but found EMPTY"),
             QuickPiece::KING(color) => match color {
                 PieceColor::WHITE => assert!(
@@ -219,9 +215,7 @@ mod tests {
         let piece = board.get(3).unwrap().get(2).unwrap();
 
         match piece {
-            QuickPiece::PIECE(color) => {
-                assert!(false, "Expected KING of color BLACK, but found PIECE")
-            }
+            QuickPiece::PIECE(_) => assert!(false, "Expected KING of color BLACK, but found PIECE"),
             QuickPiece::EMPTY => assert!(false, "Expected KING of color BLACK, but found EMPTY"),
             QuickPiece::KING(color) => match color {
                 PieceColor::WHITE => assert!(

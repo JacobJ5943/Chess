@@ -104,8 +104,8 @@ impl PieceMove for Pawn {
             if x_delta == 0 {
                 let piece = quick_board.get(x_coord).unwrap().get(y_coord).unwrap();
                 piece_on_location_result = match piece {
-                    QuickPiece::PIECE(color) => false,
-                    QuickPiece::KING(color) => false,
+                    QuickPiece::PIECE(_) => false,
+                    QuickPiece::KING(_) => false,
                     QuickPiece::EMPTY => true,
                 };
             }

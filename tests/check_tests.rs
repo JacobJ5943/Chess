@@ -2,14 +2,12 @@ use chess::pieces::bishop::Bishop;
 mod common;
 use chess::board;
 use chess::game;
-use chess::piece_types::QuickPiece::PIECE;
 use chess::piece_types::{PieceColor, QuickPiece};
 use chess::pieces::king::King;
 use chess::pieces::knight::Knight;
 use chess::pieces::queen::Queen;
 use chess::pieces::rook::Rook;
-use chess::pieces::{AnyPiece, PieceMove};
-use std::collections::BinaryHeap;
+use chess::pieces::AnyPiece;
 
 #[test]
 fn test_check_same_color() {
