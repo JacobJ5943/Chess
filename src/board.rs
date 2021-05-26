@@ -37,13 +37,41 @@ impl Error for MoveError {
     }
 }
 
+#[derive(Debug)]
+pub struct PlayedMove {
+    piece_string: String,
+    starting_position: (usize, usize),
+    end_position: (usize, usize),
+    moving_color: PieceColor,
+    promotion_piece: Option<String>,
+}
+
+impl PlayedMove {
+    pub fn new(
+        piece_string: String,
+        starting_position: (usize, usize),
+        end_position: (usize, usize),
+        moving_color: PieceColor,
+        promotion_piece: Option<String>,
+    ) -> PlayedMove {
+        PlayedMove {
+            piece_string,
+            starting_position,
+            end_position,
+            moving_color,
+            promotion_piece,
+        }
+    }
+}
+
 pub struct Board {
     pub position_board: Vec<Vec<QuickPiece>>,
     pub live_white_pieces: Vec<AnyPiece>,
     pub live_black_pieces: Vec<AnyPiece>,
     pub white_king_position: (usize, usize),
     pub black_king_position: (usize, usize),
-    pub last_move_color: PieceColor,
+    pub last_move_color: PieceColor, // @TODO with last played move being a thing this is redundant
+    pub played_moves: Vec<PlayedMove>, // remove this to be the last played move
 }
 
 impl Board {
@@ -55,6 +83,7 @@ impl Board {
             white_king_position: Board::default_white_king_pos(),
             black_king_position: Board::default_black_king_pos(),
             last_move_color: PieceColor::BLACK,
+            played_moves: Vec::new(),
         }
     }
 
@@ -387,6 +416,7 @@ impl Board {
 
     fn move_piece(
         &mut self,
+        piece_symbol: String,
         moving_x: usize,
         moving_y: usize,
         moving_piece_color: &PieceColor,
@@ -428,6 +458,22 @@ impl Board {
             }
             _ => (),
         };
+        match promotion_piece {
+            Some(promotion_piece) => self.played_moves.push(PlayedMove::new(
+                piece_symbol,
+                (moving_x, moving_y),
+                (end_x, end_y),
+                moving_piece_color.clone(),
+                Some(String::from(promotion_piece)),
+            )),
+            None => self.played_moves.push(PlayedMove::new(
+                piece_symbol,
+                (moving_x, moving_y),
+                (end_x, end_y),
+                moving_piece_color.clone(),
+                None,
+            )),
+        };
     }
 
     // @TODO this would be another prime function for adding Result to
@@ -454,6 +500,67 @@ impl Board {
         };
     }
 
+    // This will return () as long as this is not a pawn attempting and failing to make an en passant
+    fn valid_en_passant(
+        &self,
+        parsed_move: &ParsedMove,
+        end_x: usize,
+        end_y: usize,
+    ) -> Result<(), MoveError> {
+        if let MoveTypes::Take = parsed_move.move_type {
+            if let "P" = parsed_move.piece_char.as_str() {
+                if let QuickPiece::EMPTY =
+                    self.position_board.get(end_x).unwrap().get(end_y).unwrap()
+                {
+                    if end_y == 5 || end_y == 2 {
+                        if let Some(last_played_move) = self.played_moves.last() {
+                            if let "P" = last_played_move.piece_string.as_str() {
+                                if last_played_move.starting_position.0
+                                    == last_played_move.end_position.0
+                                    && last_played_move.starting_position.0 == end_x
+                                {
+                                    if usize::max(
+                                        last_played_move.starting_position.1,
+                                        last_played_move.end_position.1,
+                                    ) - 1
+                                        == end_y
+                                    {
+                                        if usize::max(
+                                            last_played_move.starting_position.1,
+                                            last_played_move.end_position.1,
+                                        ) - 2
+                                            == usize::min(
+                                                last_played_move.starting_position.1,
+                                                last_played_move.end_position.1,
+                                            )
+                                        {
+                                            return Ok(());
+                                        } else {
+                                            return Err(MoveError::new("Pawn tried to take to empty location without valid en passant. last pawn did not move 2 spaces"));
+                                        }
+                                    } else {
+                                        return Err(MoveError::new("Pawn tried to take to empty location without valid en passant. Moving pawn not in the middle spot"));
+                                    }
+                                } else {
+                                    return Err(MoveError::new("Pawn tried to take to empty location without valid en passant. Moving pawn not on last moved x location"));
+                                }
+                            } else {
+                                return Err(MoveError::new("Pawn tried to take to empty location without valid en passant. The last moved piece is not a pawn"));
+                            }
+                        } else {
+                            return Err(MoveError::new("Pawn tried to take to empty location without valid en passant. There is no last move"));
+                        }
+                    } else {
+                        return Err(MoveError::new(
+                            "Pawn tried to take to empty location without valid en passant.",
+                        ));
+                    }
+                }
+            }
+        }
+        // This isn't pertaining to the pawn so it doesn't matter
+        Ok(())
+    }
     // Right now this I am assuming that this function is only used by my tests or after a move has been deemed valid
     // @TODO Maybe add if move says check or check mate make that check too
     pub fn play_move(&mut self, parsed_move: ParsedMove) -> Result<(), MoveError> {
@@ -488,8 +595,12 @@ impl Board {
                     &current_move_color,
                     self,
                 ) {
+                    // If this is an invalid en passant it will return an error  which ? will then bubble up and return here
+                    self.valid_en_passant(&parsed_move, end_x, end_y)?;
+
                     if let MoveTypes::Promote(piece_promote) = parsed_move.move_type {
                         self.move_piece(
+                            parsed_move.piece_char,
                             moving_x,
                             moving_y,
                             &current_move_color,
@@ -499,6 +610,7 @@ impl Board {
                         );
                     } else {
                         self.move_piece(
+                            parsed_move.piece_char,
                             moving_x,
                             moving_y,
                             &current_move_color,
@@ -654,11 +766,19 @@ impl Board {
                 PieceColor::WHITE => self.white_king_position,
                 PieceColor::BLACK => self.black_king_position,
             };
-            self.move_piece(king_x, king_y, king_color, king_x_end, king_y, None);
+            self.move_piece(
+                String::from("K"),
+                king_x,
+                king_y,
+                king_color,
+                king_x_end,
+                king_y,
+                None,
+            );
             if king_x_end == 6 {
-                self.move_piece(7, king_y, king_color, 5, king_y, None);
+                self.move_piece(String::from("K"), 7, king_y, king_color, 5, king_y, None);
             } else {
-                self.move_piece(0, king_y, king_color, 3, king_y, None);
+                self.move_piece(String::from("K"), 0, king_y, king_color, 3, king_y, None);
             }
             true
         } else {

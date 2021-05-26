@@ -30,6 +30,7 @@ fn test_can_castle_white_only_no_moves() {
         white_king_position: (0, 0),
         black_king_position: (0, 0),
         last_move_color: PieceColor::WHITE,
+        played_moves: Vec::new(),
     };
 
     common::insert_piece_into_board(
@@ -114,6 +115,7 @@ fn test_can_castle_black_only_no_moves() {
         white_king_position: (0, 0),
         black_king_position: (0, 0),
         last_move_color: PieceColor::WHITE,
+        played_moves: Vec::new(),
     };
 
     common::insert_piece_into_board(

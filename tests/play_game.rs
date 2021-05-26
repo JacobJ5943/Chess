@@ -18,7 +18,12 @@ fn test_play_game_1() {
             _ => {
                 let result = board.play_move(white_move);
                 match result {
-                    Ok(_) => assert_eq!(&board.last_move_color == &PieceColor::WHITE, true, "The expected last move color was white, but got {:?}", &board.last_move_color),
+                    Ok(_) => assert_eq!(
+                        &board.last_move_color == &PieceColor::WHITE,
+                        true,
+                        "The expected last move color was white, but got {:?}",
+                        &board.last_move_color
+                    ),
                     Err(move_error) => assert!(false, "Error:{:?}", move_error),
                 }
             } // White move
@@ -28,7 +33,12 @@ fn test_play_game_1() {
             _ => {
                 let result = board.play_move(black_move);
                 match result {
-                    Ok(_) => assert_eq!(&board.last_move_color == &PieceColor::BLACK, true, "The expected last move color was black, but got {:?}", &board.last_move_color),
+                    Ok(_) => assert_eq!(
+                        &board.last_move_color == &PieceColor::BLACK,
+                        true,
+                        "The expected last move color was black, but got {:?}",
+                        &board.last_move_color
+                    ),
                     Err(move_error) => assert!(false, "Error:{:?}", move_error),
                 }
             } // White move
@@ -51,7 +61,12 @@ fn test_play_game_2() {
             _ => {
                 let result = board.play_move(white_move);
                 match result {
-                    Ok(_) => assert_eq!(&board.last_move_color == &PieceColor::WHITE, true, "The expected last move color was white, but got {:?}", &board.last_move_color),
+                    Ok(_) => assert_eq!(
+                        &board.last_move_color == &PieceColor::WHITE,
+                        true,
+                        "The expected last move color was white, but got {:?}",
+                        &board.last_move_color
+                    ),
                     Err(move_error) => assert!(false, "Error:{:?}", move_error),
                 }
             } // White move
@@ -61,7 +76,12 @@ fn test_play_game_2() {
             _ => {
                 let result = board.play_move(black_move);
                 match result {
-                    Ok(_) => assert_eq!(&board.last_move_color == &PieceColor::BLACK, true, "The expected last move color was black, but got {:?}", &board.last_move_color),
+                    Ok(_) => assert_eq!(
+                        &board.last_move_color == &PieceColor::BLACK,
+                        true,
+                        "The expected last move color was black, but got {:?}",
+                        &board.last_move_color
+                    ),
                     Err(move_error) => assert!(false, "Error:{:?}", move_error),
                 }
             } // White move
@@ -84,7 +104,12 @@ fn test_play_game_3() {
             _ => {
                 let result = board.play_move(white_move);
                 match result {
-                    Ok(_) => assert_eq!(&board.last_move_color == &PieceColor::WHITE, true, "The expected last move color was white, but got {:?}", &board.last_move_color),
+                    Ok(_) => assert_eq!(
+                        &board.last_move_color == &PieceColor::WHITE,
+                        true,
+                        "The expected last move color was white, but got {:?}",
+                        &board.last_move_color
+                    ),
                     Err(move_error) => assert!(false, "Error:{:?}", move_error),
                 }
             } // White move
@@ -94,7 +119,12 @@ fn test_play_game_3() {
             _ => {
                 let result = board.play_move(black_move);
                 match result {
-                    Ok(_) => assert_eq!(&board.last_move_color == &PieceColor::BLACK, true, "The expected last move color was black, but got {:?}", &board.last_move_color),
+                    Ok(_) => assert_eq!(
+                        &board.last_move_color == &PieceColor::BLACK,
+                        true,
+                        "The expected last move color was black, but got {:?}",
+                        &board.last_move_color
+                    ),
                     Err(move_error) => assert!(false, "Error:{:?}", move_error),
                 }
             } // White move
@@ -118,7 +148,12 @@ fn test_play_game_4() {
             _ => {
                 let result = board.play_move(white_move);
                 match result {
-                    Ok(_) => assert_eq!(&board.last_move_color == &PieceColor::WHITE, true, "The expected last move color was white, but got {:?}", &board.last_move_color),
+                    Ok(_) => assert_eq!(
+                        &board.last_move_color == &PieceColor::WHITE,
+                        true,
+                        "The expected last move color was white, but got {:?}",
+                        &board.last_move_color
+                    ),
                     Err(move_error) => assert!(false, "Error:{:?}", move_error),
                 }
             } // White move
@@ -128,7 +163,12 @@ fn test_play_game_4() {
             _ => {
                 let result = board.play_move(black_move);
                 match result {
-                    Ok(_) => assert_eq!(&board.last_move_color == &PieceColor::BLACK, true, "The expected last move color was black, but got {:?}", &board.last_move_color),
+                    Ok(_) => assert_eq!(
+                        &board.last_move_color == &PieceColor::BLACK,
+                        true,
+                        "The expected last move color was black, but got {:?}",
+                        &board.last_move_color
+                    ),
                     Err(move_error) => assert!(false, "Error:{:?}", move_error),
                 }
             } // White move
@@ -151,7 +191,12 @@ fn test_play_game_5() {
             _ => {
                 let result = board.play_move(white_move);
                 match result {
-                    Ok(_) => assert_eq!(&board.last_move_color == &PieceColor::WHITE, true, "The expected last move color was white, but got {:?}", &board.last_move_color),
+                    Ok(_) => assert_eq!(
+                        &board.last_move_color == &PieceColor::WHITE,
+                        true,
+                        "The expected last move color was white, but got {:?}",
+                        &board.last_move_color
+                    ),
                     Err(move_error) => assert!(false, "Error:{:?}", move_error),
                 }
             } // White move
@@ -161,7 +206,12 @@ fn test_play_game_5() {
             _ => {
                 let result = board.play_move(black_move);
                 match result {
-                    Ok(_) => assert_eq!(&board.last_move_color == &PieceColor::BLACK, true, "The expected last move color was black, but got {:?}", &board.last_move_color),
+                    Ok(_) => assert_eq!(
+                        &board.last_move_color == &PieceColor::BLACK,
+                        true,
+                        "The expected last move color was black, but got {:?}",
+                        &board.last_move_color
+                    ),
                     Err(move_error) => assert!(false, "Error:{:?}", move_error),
                 }
             } // White move
@@ -183,7 +233,12 @@ fn test_en_passant_white() {
             _ => {
                 let result = board.play_move(white_move);
                 match result {
-                    Ok(_) => assert_eq!(&board.last_move_color == &PieceColor::WHITE, true, "The expected last move color was white, but got {:?}", &board.last_move_color),
+                    Ok(_) => assert_eq!(
+                        &board.last_move_color == &PieceColor::WHITE,
+                        true,
+                        "The expected last move color was white, but got {:?}",
+                        &board.last_move_color
+                    ),
                     Err(move_error) => assert!(false, "Error:{:?}", move_error),
                 }
             } // White move
@@ -193,7 +248,12 @@ fn test_en_passant_white() {
             _ => {
                 let result = board.play_move(black_move);
                 match result {
-                    Ok(_) => assert_eq!(&board.last_move_color == &PieceColor::BLACK, true, "The expected last move color was black, but got {:?}", &board.last_move_color),
+                    Ok(_) => assert_eq!(
+                        &board.last_move_color == &PieceColor::BLACK,
+                        true,
+                        "The expected last move color was black, but got {:?}",
+                        &board.last_move_color
+                    ),
                     Err(move_error) => assert!(false, "Error:{:?}", move_error),
                 }
             } // White move
@@ -205,7 +265,7 @@ fn test_en_passant_white() {
 #[test]
 fn test_en_passant_white_one_move_late() {
     let mut board = board::Board::new();
-    let parsed_moves = parser::parse_game_moves(String::from("1. c4 h6 2. c5 b5"));
+    let parsed_moves = parser::parse_game_moves(String::from("1. c4 b5 2. c5 e6"));
     let mut count = 0;
     for parsed_move in parsed_moves {
         let white_move = parsed_move.1.unwrap();
@@ -215,7 +275,12 @@ fn test_en_passant_white_one_move_late() {
             _ => {
                 let result = board.play_move(white_move);
                 match result {
-                    Ok(_) => assert_eq!(&board.last_move_color == &PieceColor::WHITE, true, "The expected last move color was white, but got {:?}", &board.last_move_color),
+                    Ok(_) => assert_eq!(
+                        &board.last_move_color == &PieceColor::WHITE,
+                        true,
+                        "The expected last move color was white, but got {:?}",
+                        &board.last_move_color
+                    ),
                     Err(move_error) => assert!(false, "Error:{:?}", move_error),
                 }
             } // White move
@@ -225,20 +290,31 @@ fn test_en_passant_white_one_move_late() {
             _ => {
                 let result = board.play_move(black_move);
                 match result {
-                    Ok(_) => assert_eq!(&board.last_move_color == &PieceColor::BLACK, true, "The expected last move color was black, but got {:?}", &board.last_move_color),
+                    Ok(_) => assert_eq!(
+                        &board.last_move_color == &PieceColor::BLACK,
+                        true,
+                        "The expected last move color was black, but got {:?}",
+                        &board.last_move_color
+                    ),
                     Err(move_error) => assert!(false, "Error:{:?}", move_error),
                 }
             } // White move
         }
         count = count + 1;
     }
-    let white_move = parser::parse_move("cxb6");
-    if let Ok(_) = white_move {
-        assert!(
-            false,
-            "Expected en passant to be one move late and fail, but it succeeded. Move cxb6"
-        );
-    }
+    let white_move = parser::parse_move("cxb6").unwrap();
+    match white_move.move_type {
+        MoveTypes::FinalResult(_game_result) => assert!(false, "The game should not have ended"),
+        _ => {
+            let result = board.play_move(white_move);
+            if let Ok(_) = result {
+                assert!(
+                    false,
+                    "Expected en passant to be one move late and fail, but it succeeded. Move cxb6"
+                );
+            };
+        } // White move
+    };
 }
 
 #[test]
@@ -254,7 +330,12 @@ fn test_en_passant_black() {
             _ => {
                 let result = board.play_move(white_move);
                 match result {
-                    Ok(_) => assert_eq!(&board.last_move_color == &PieceColor::WHITE, true, "The expected last move color was white, but got {:?}", &board.last_move_color),
+                    Ok(_) => assert_eq!(
+                        &board.last_move_color == &PieceColor::WHITE,
+                        true,
+                        "The expected last move color was white, but got {:?}",
+                        &board.last_move_color
+                    ),
                     Err(move_error) => assert!(false, "Error:{:?}", move_error),
                 }
             } // White move
@@ -264,7 +345,12 @@ fn test_en_passant_black() {
             _ => {
                 let result = board.play_move(black_move);
                 match result {
-                    Ok(_) => assert_eq!(&board.last_move_color == &PieceColor::BLACK, true, "The expected last move color was black, but got {:?}", &board.last_move_color),
+                    Ok(_) => assert_eq!(
+                        &board.last_move_color == &PieceColor::BLACK,
+                        true,
+                        "The expected last move color was black, but got {:?}",
+                        &board.last_move_color
+                    ),
                     Err(move_error) => assert!(false, "Error:{:?}", move_error),
                 }
             } // White move
@@ -286,7 +372,12 @@ fn test_en_passant_black_one_move_late() {
             _ => {
                 let result = board.play_move(white_move);
                 match result {
-                    Ok(_) => assert_eq!(&board.last_move_color == &PieceColor::WHITE, true, "The expected last move color was white, but got {:?}", &board.last_move_color),
+                    Ok(_) => assert_eq!(
+                        &board.last_move_color == &PieceColor::WHITE,
+                        true,
+                        "The expected last move color was white, but got {:?}",
+                        &board.last_move_color
+                    ),
                     Err(move_error) => assert!(false, "Error:{:?}", move_error),
                 }
             } // White move
@@ -296,27 +387,44 @@ fn test_en_passant_black_one_move_late() {
             _ => {
                 let result = board.play_move(black_move);
                 match result {
-                    Ok(_) => assert_eq!(&board.last_move_color == &PieceColor::BLACK, true, "The expected last move color was black, but got {:?}", &board.last_move_color),
+                    Ok(_) => assert_eq!(
+                        &board.last_move_color == &PieceColor::BLACK,
+                        true,
+                        "The expected last move color was black, but got {:?}",
+                        &board.last_move_color
+                    ),
                     Err(move_error) => assert!(false, "Error:{:?}", move_error),
                 }
             } // White move
         }
         count = count + 1;
     }
-    let white_move = parser::parse_move("h4");
-    if let Err(error) = white_move {
-        assert!(
-            false,
-            "Move before en passant failed unexpectedly.Error:{:?}",
-            error
-        );
-    }
 
-    let black_move = parser::parse_move("dxe3");
-    if let Ok(_) = black_move {
-        assert!(
-            false,
-            "Expected en passant to be one move late and fail, but it succeeded. Move dxe3"
-        );
-    }
+    let white_move = parser::parse_move("h4").unwrap();
+    match white_move.move_type {
+        MoveTypes::FinalResult(_game_result) => assert!(false, "The game should not have ended"),
+        _ => {
+            let result = board.play_move(white_move);
+            if let Err(error) = result {
+                assert!(
+                    false,
+                    "Move before en passant failed unexpectedly.Error:{:?}",
+                    error
+                );
+            }
+        } // White move
+    };
+    let black_move = parser::parse_move("dxe3").unwrap();
+    match black_move.move_type {
+        MoveTypes::FinalResult(_game_result) => assert!(false, "The game should not have ended"),
+        _ => {
+            let result = board.play_move(black_move);
+            if let Ok(_) = result {
+                assert!(
+                    false,
+                    "Expected en passant to be one move late and fail, but it succeeded. Move dxe3"
+                );
+            };
+        }
+    };
 }
