@@ -1,5 +1,5 @@
 use chess::board;
-use chess::game::{is_board_draw_by_repetition, is_board_stale_mate};
+use chess::game::{is_board_check_mate, is_board_draw_by_repetition, is_board_stale_mate};
 use chess::parser;
 use chess::parser::MoveTypes;
 use chess::piece_types::PieceColor;
@@ -696,5 +696,127 @@ fn test_draw_by_repetition_2() {
         is_board_draw_by_repetition(&mut board),
         true,
         "Expected the board to be in draw by repetition"
+    );
+}
+
+#[test]
+fn more_check_mate_tests_1() {
+    //https://lichess.org/l6uc9nf2
+    let mut board = board::Board::new();
+
+    let parsed_moves = parser::parse_game_moves(String::from("1. e4 g6 2. d4 Bg7 3. Nf3 e6 4. c4 c6 5. Bd3 b6 6. O-O Ne7 7. Nc3 d5 8. cxd5 cxd5 9. e5 Nbc6 10. Bg5 Qd7 11. Nb5 O-O 12. Nd6 Nxd4 13. Bxe7 Qxe7 14. Nxc8 Nxf3+ 15. Qxf3 Raxc8 16. Qg3 f6 17. exf6 Bxf6 18. Rab1 Bg7 19. h4 e5 20. h5 g5 21. Ba6 Rc7 22. Qd3 Rd8 23. Rfc1 Rxc1+ 24. Rxc1 e4 25. Qb3 Bh6 26. Rc8 g4 27. Qxd5+ Kg7 28. Qxd8 Qb4 29. Rc7+ Qe7 30. Qxe7+ Kg8 31. Rc8+ Bf8 32. Qxf8# 1-0"));
+    let mut count = 0;
+    for parsed_move in parsed_moves {
+        let white_move = parsed_move.1.unwrap();
+        let black_move = parsed_move.2.unwrap();
+        match white_move.move_type {
+            MoveTypes::FinalResult(_game_result) => (),
+            _ => {
+                let result = board.play_move(white_move);
+                match result {
+                    Ok(_) => assert_eq!(
+                        &board.last_move_color == &PieceColor::WHITE,
+                        true,
+                        "The expected last move color was white, but got {:?}",
+                        &board.last_move_color
+                    ),
+                    Err(move_error) => assert!(false, "Error:{:?}", move_error),
+                }
+            } // White move
+        }
+        match black_move.move_type {
+            MoveTypes::FinalResult(_game_result) => (),
+            _ => {
+                let result = board.play_move(black_move);
+                match result {
+                    Ok(_) => assert_eq!(
+                        &board.last_move_color == &PieceColor::BLACK,
+                        true,
+                        "The expected last move color was black, but got {:?}",
+                        &board.last_move_color
+                    ),
+                    Err(move_error) => assert!(false, "Error:{:?}", move_error),
+                }
+            } // Black move
+        }
+        count = count + 1;
+    }
+
+    assert_eq!(
+        is_board_stale_mate(&mut board),
+        false,
+        "Expected the board to be in stalemate"
+    );
+    assert_eq!(
+        is_board_draw_by_repetition(&mut board),
+        false,
+        "Expected the board to be in draw by repetition"
+    );
+    assert_eq!(
+        is_board_check_mate(&board.last_move_color.clone(), &mut board),
+        true,
+        "Expected the board to be in checkmate"
+    );
+}
+
+#[test]
+fn more_check_mate_tests_2() {
+    //https://lichess.org/ovkepufy
+    let mut board = board::Board::new();
+
+    let parsed_moves = parser::parse_game_moves(String::from("1. d4 d5 2. Nc3 Nc6 3. Bf4 Bf5 4. Nb5 Rc8 5. a3 f6 6. e3 e5 7. dxe5 fxe5 8. Bg3 Qg5 9. h4 Qg4 10. Be2 Qg6 11. h5 Qf6 12. Bh4 g5 13. hxg6 Qxg6 14. Bh5 Qxh5 15. Qxh5+ Bg6 16. Qd1 Rd8 17. Nxc7+ Kf7 18. Bxd8 Nge7 19. Bxe7 Bxe7 20. Qxd5+ Kg7 21. O-O-O Nd8 22. Ne6+ Nxe6 23. Qxe6 h5 24. Rd7 Kh6 25. Rxe7 Rc8 26. Qxe5 Rxc2+ 27. Kd1 Rxb2 28. Qxb2 a5 29. Nf3 a4 30. Qf6 b5 31. Qg5# 1-0"));
+    let mut count = 0;
+    for parsed_move in parsed_moves {
+        let white_move = parsed_move.1.unwrap();
+        let black_move = parsed_move.2.unwrap();
+        match white_move.move_type {
+            MoveTypes::FinalResult(_game_result) => (),
+            _ => {
+                let result = board.play_move(white_move);
+                //println!("QuickBoard:{}\n{:?}", count, board.position_board);
+                match result {
+                    Ok(_) => assert_eq!(
+                        &board.last_move_color == &PieceColor::WHITE,
+                        true,
+                        "The expected last move color was white, but got {:?}",
+                        &board.last_move_color
+                    ),
+                    Err(move_error) => assert!(false, "Error:{:?}", move_error),
+                }
+            } // White move
+        }
+        match black_move.move_type {
+            MoveTypes::FinalResult(_game_result) => (),
+            _ => {
+                let result = board.play_move(black_move);
+                //println!("QuickBoard:{}\n{:?}", count, board.position_board);
+                match result {
+                    Ok(_) => assert_eq!(
+                        &board.last_move_color == &PieceColor::BLACK,
+                        true,
+                        "The expected last move color was black, but got {:?}",
+                        &board.last_move_color
+                    ),
+                    Err(move_error) => assert!(false, "Error:{:?}", move_error),
+                }
+            } // Black move
+        }
+        count = count + 1;
+    }
+
+    assert_eq!(
+        is_board_stale_mate(&mut board),
+        false,
+        "Expected the board to be in stalemate"
+    );
+    assert_eq!(
+        is_board_draw_by_repetition(&mut board),
+        false,
+        "Expected the board to be in draw by repetition"
+    );
+    assert_eq!(
+        is_board_check_mate(&board.last_move_color.clone(), &mut board),
+        true,
+        "Expected the board to be in checkmate"
     );
 }

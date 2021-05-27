@@ -33,10 +33,15 @@ pub fn is_board_in_check(last_move: &PieceColor, board: &Board) -> bool {
 }
 
 pub fn is_board_stale_mate(board: &mut Board) -> bool {
-    if !can_any_piece_move(&PieceColor::WHITE, board) {
+    if !can_any_piece_move(&PieceColor::WHITE, board)
+        && !is_board_in_check(&PieceColor::WHITE, board)
+    {
         return true;
     }
-    if !can_any_piece_move(&PieceColor::BLACK, board) {
+
+    if !can_any_piece_move(&PieceColor::BLACK, board)
+        && !is_board_in_check(&PieceColor::WHITE, board)
+    {
         return true;
     }
     false

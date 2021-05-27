@@ -435,6 +435,27 @@ impl Board {
         end_y: usize,
         promotion_piece: Option<&str>,
     ) {
+        if let Ok(result) =
+            self.valid_en_passant(piece_symbol.as_str(), moving_x, moving_y, end_x, end_y)
+        {
+            if result {
+                let last_move = self.played_moves.last_mut().unwrap();
+                let last_move_color = last_move.moving_color.clone();
+                let last_move_end_pos = last_move.end_position.clone();
+                println!("removing the piece");
+                self.remove_piece_color(last_move_end_pos.0, last_move_end_pos.1, &last_move_color);
+
+                self.position_board
+                    .get_mut(last_move_end_pos.0)
+                    .unwrap()
+                    .remove(last_move_end_pos.1);
+                self.position_board
+                    .get_mut(last_move_end_pos.0)
+                    .unwrap()
+                    .insert(last_move_end_pos.1, QuickPiece::EMPTY);
+            }
+        };
+
         self.move_in_quick_board(moving_x, moving_y, moving_piece_color, end_x, end_y);
 
         let color_being_taken = match moving_piece_color {
@@ -469,6 +490,7 @@ impl Board {
             }
             _ => (),
         };
+
         match promotion_piece {
             Some(promotion_piece) => self.played_moves.push(PlayedMove::new(
                 piece_symbol,
@@ -537,7 +559,10 @@ impl Board {
         };
     }
 
-    // This will return () as long as this is not a pawn attempting and failing to make an en passant
+    // This will return false as long as this is not a pawn attempting and failing to make an en passant
+    // If it's a successful en passant it will return true.
+    // if it's a failed en passant it will return an error
+    // @ TODO Fix this at some point because this is a smelly return value
     pub fn valid_en_passant(
         &self,
         //parsed_move: &ParsedMove,
@@ -546,7 +571,15 @@ impl Board {
         _start_y: usize,
         end_x: usize,
         end_y: usize,
-    ) -> Result<(), MoveError> {
+    ) -> Result<bool, MoveError> {
+        if (7, 4) == (start_x, _start_y) && (6, 5) == (end_x, end_y) {
+            println!("break");
+            println!(
+                "validEn:{:?}",
+                self.position_board.get(end_x).unwrap().get(end_y).unwrap()
+            );
+        };
+
         if let "P" = moving_piece_symbol {
             if let QuickPiece::EMPTY = self.position_board.get(end_x).unwrap().get(end_y).unwrap() {
                 let delta_x = usize::max(start_x, end_x) - usize::min(start_x, end_x);
@@ -573,7 +606,7 @@ impl Board {
                                                 last_played_move.end_position.1,
                                             )
                                         {
-                                            return Ok(());
+                                            return Ok(true);
                                         } else {
                                             return Err(MoveError::new("Pawn tried to take to empty location without valid en passant. last pawn did not move 2 spaces"));
                                         }
@@ -595,12 +628,12 @@ impl Board {
                         ));
                     }
                 } else if delta_x == 0 {
-                    return Ok(());
+                    return Ok(false);
                 }
             }
         }
         // This isn't pertaining to the pawn so it doesn't matter
-        Ok(())
+        Ok(false)
     }
     // Right now this I am assuming that this function is only used by my tests or after a move has been deemed valid
     // @TODO Maybe add if move says check or check mate make that check too
@@ -612,21 +645,22 @@ impl Board {
                 self.castle_king(&current_move_color, *king_end_x);
             }
             _ => {
-                let moving_piece = self.find_start_piece_from_move(&parsed_move);
-                if let None = moving_piece {
-                    return Err(MoveError::new(
-                        format!(
-                            "The moving piece could not be found for the move {:?}",
-                            &parsed_move
-                        )
-                        .as_str(),
-                    ));
-                }
+                let moving_piece = match self.find_start_piece_from_move(&parsed_move) {
+                    None => {
+                        return Err(MoveError::new(
+                            format!(
+                                "The moving piece could not be found for the move {:?}",
+                                &parsed_move
+                            )
+                            .as_str(),
+                        ));
+                    }
+                    Some(piece) => piece,
+                };
 
-                let (moving_x, moving_y) = moving_piece.unwrap().get_pos();
+                let (moving_x, moving_y) = moving_piece.get_pos();
                 let end_x = parser::parse_coordinate(&parsed_move.end_coords.0);
                 let end_y = parser::parse_coordinate(&parsed_move.end_coords.1);
-
                 if !game::will_move_be_in_check(
                     moving_x,
                     moving_y,
