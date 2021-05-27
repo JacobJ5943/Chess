@@ -643,3 +643,58 @@ fn test_draw_by_repetition_1() {
         "Expected the board to be in draw by repetition"
     );
 }
+
+#[test]
+fn test_draw_by_repetition_2() {
+    //https://lichess.org/0ub1zd6g
+    let mut board = board::Board::new();
+
+    let parsed_moves = parser::parse_game_moves(String::from("1. e4 g6 2. d4 Bg7 3. e5 e6 4. Nc3 d6 5. f4 dxe5 6. fxe5 Ne7 7. Nf3 O-O 8. Bc4 b6 9. Bg5 Bb7 10. O-O c5 11. dxc5 Qxd1 12. Raxd1 bxc5 13. Na4 Nbc6 14. Nxc5 Rab8 15. Nxb7 Rxb7 16. b3 Nf5 17. a3 h6 18. Bc1 Nxe5 19. Nxe5 Bxe5 20. Rfe1 Bd4+ 21. Kh1 Bc3 22. Bd2 Bb2 23. Bc1 Bc3 24. Bd2 Bb2 25. Bc1 Bc3 1/2-1/2"));
+    let mut count = 0;
+    for parsed_move in parsed_moves {
+        let white_move = parsed_move.1.unwrap();
+        let black_move = parsed_move.2.unwrap();
+        match white_move.move_type {
+            MoveTypes::FinalResult(_game_result) => (),
+            _ => {
+                let result = board.play_move(white_move);
+                match result {
+                    Ok(_) => assert_eq!(
+                        &board.last_move_color == &PieceColor::WHITE,
+                        true,
+                        "The expected last move color was white, but got {:?}",
+                        &board.last_move_color
+                    ),
+                    Err(move_error) => assert!(false, "Error:{:?}", move_error),
+                }
+            } // White move
+        }
+        match black_move.move_type {
+            MoveTypes::FinalResult(_game_result) => (),
+            _ => {
+                let result = board.play_move(black_move);
+                match result {
+                    Ok(_) => assert_eq!(
+                        &board.last_move_color == &PieceColor::BLACK,
+                        true,
+                        "The expected last move color was black, but got {:?}",
+                        &board.last_move_color
+                    ),
+                    Err(move_error) => assert!(false, "Error:{:?}", move_error),
+                }
+            } // Black move
+        }
+        count = count + 1;
+    }
+
+    assert_eq!(
+        is_board_stale_mate(&mut board),
+        false,
+        "Expected the board to be in stalemate"
+    );
+    assert_eq!(
+        is_board_draw_by_repetition(&mut board),
+        true,
+        "Expected the board to be in draw by repetition"
+    );
+}

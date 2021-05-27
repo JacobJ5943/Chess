@@ -246,7 +246,7 @@ fn test_can_move_forward_black_left() {
 
 #[test]
 fn test_move_two_initial_black() {
-    let board = common::create_board_with_piece(4, 4, QuickPiece::PIECE(PieceColor::BLACK));
+    let mut board = common::create_board_with_piece(4, 4, QuickPiece::PIECE(PieceColor::BLACK));
     let pawn = Pawn::new(4, 4, PieceColor::BLACK);
 
     assert_eq!(
@@ -294,6 +294,30 @@ fn test_move_two_initial_black() {
         4,
         4
     );
+    common::insert_quick_piece_into_board(QuickPiece::PIECE(PieceColor::BLACK), 4, 3, &mut board);
+    assert_eq!(
+        pawn.can_move(4, 2, &board),
+        false,
+        "Expected to not be able to move to {}, {} from {},{} through black piece at {},{}",
+        4,
+        2,
+        4,
+        4,
+        4,
+        3
+    );
+    common::insert_quick_piece_into_board(QuickPiece::PIECE(PieceColor::WHITE), 4, 3, &mut board);
+    assert_eq!(
+        pawn.can_move(4, 2, &board),
+        false,
+        "Expected to not be able to move to {}, {} from {},{} through white piece at {},{}",
+        4,
+        2,
+        4,
+        4,
+        4,
+        3
+    );
     assert_eq!(
         pawn.can_move(4, 1, &board),
         false,
@@ -307,7 +331,7 @@ fn test_move_two_initial_black() {
 
 #[test]
 fn test_move_two_initial_white() {
-    let board = common::create_board_with_piece(4, 4, QuickPiece::PIECE(PieceColor::WHITE));
+    let mut board = common::create_board_with_piece(4, 4, QuickPiece::PIECE(PieceColor::WHITE));
     let pawn = Pawn::new(4, 4, PieceColor::WHITE);
 
     assert_eq!(
@@ -327,6 +351,30 @@ fn test_move_two_initial_white() {
         6,
         4,
         4
+    );
+    common::insert_quick_piece_into_board(QuickPiece::PIECE(PieceColor::BLACK), 4, 5, &mut board);
+    assert_eq!(
+        pawn.can_move(4, 6, &board),
+        false,
+        "Expected to not be able to move to {}, {} from {},{} through black piece at {},{}",
+        4,
+        6,
+        4,
+        4,
+        4,
+        5
+    );
+    common::insert_quick_piece_into_board(QuickPiece::PIECE(PieceColor::WHITE), 4, 5, &mut board);
+    assert_eq!(
+        pawn.can_move(4, 6, &board),
+        false,
+        "Expected to not be able to move to {}, {} from {},{} through white piece at {},{}",
+        4,
+        6,
+        4,
+        4,
+        4,
+        5
     );
 
     assert_eq!(

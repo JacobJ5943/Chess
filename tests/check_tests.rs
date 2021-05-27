@@ -8,6 +8,7 @@ use chess::pieces::knight::Knight;
 use chess::pieces::queen::Queen;
 use chess::pieces::rook::Rook;
 use chess::pieces::AnyPiece;
+use std::collections::HashMap;
 
 #[test]
 fn test_check_same_color() {
@@ -20,6 +21,7 @@ fn test_check_same_color() {
         black_king_position: (0, 0),
         last_move_color: PieceColor::BLACK,
         played_moves: Vec::new(),
+        board_state_hashes: HashMap::new(),
     };
 
     let bishop = Bishop::new(4, 4, PieceColor::WHITE);
@@ -95,6 +97,7 @@ fn test_check_through_pieces() {
         black_king_position: (0, 0),
         last_move_color: PieceColor::BLACK,
         played_moves: Vec::new(),
+        board_state_hashes: HashMap::new(),
     };
 
     let bishop = Bishop::new(4, 4, PieceColor::BLACK);
@@ -139,6 +142,7 @@ fn will_move_be_in_check() {
         black_king_position: (0, 0),
         last_move_color: PieceColor::BLACK,
         played_moves: Vec::new(),
+        board_state_hashes: HashMap::new(),
     };
 
     common::insert_piece_into_board(
@@ -207,6 +211,7 @@ fn test_check_mate() {
         black_king_position: (0, 0),
         last_move_color: PieceColor::BLACK,
         played_moves: Vec::new(),
+        board_state_hashes: HashMap::new(),
     };
 
     common::insert_piece_into_board(

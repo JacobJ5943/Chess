@@ -5,6 +5,7 @@ use chess::pieces::bishop::Bishop;
 use chess::pieces::king::King;
 use chess::pieces::rook::Rook;
 use chess::pieces::AnyPiece;
+use std::collections::HashMap;
 
 mod common;
 
@@ -31,6 +32,7 @@ fn test_can_castle_white_only_no_moves() {
         black_king_position: (0, 0),
         last_move_color: PieceColor::WHITE,
         played_moves: Vec::new(),
+        board_state_hashes: HashMap::new(),
     };
 
     common::insert_piece_into_board(
@@ -116,6 +118,7 @@ fn test_can_castle_black_only_no_moves() {
         black_king_position: (0, 0),
         last_move_color: PieceColor::WHITE,
         played_moves: Vec::new(),
+        board_state_hashes: HashMap::new(),
     };
 
     common::insert_piece_into_board(

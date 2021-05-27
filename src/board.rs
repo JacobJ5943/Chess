@@ -9,8 +9,11 @@ use crate::pieces::pawn::Pawn;
 use crate::pieces::queen::Queen;
 use crate::pieces::rook::Rook;
 use crate::pieces::{AnyPiece, PieceMove};
+use std::collections::hash_map::DefaultHasher;
+use std::collections::HashMap;
 use std::error::Error;
 use std::fmt;
+use std::hash::{Hash, Hasher};
 
 #[derive(Debug)]
 pub struct MoveError {
@@ -76,11 +79,12 @@ pub struct Board {
     pub black_king_position: (usize, usize),
     pub last_move_color: PieceColor, // @TODO with last played move being a thing this is redundant
     pub played_moves: Vec<PlayedMove>, // remove this to be the last played move
+    pub board_state_hashes: HashMap<u64, usize>,
 }
 
 impl Board {
     pub fn new() -> Board {
-        Board {
+        let mut board = Board {
             position_board: Board::create_default_position_board(),
             live_white_pieces: Board::default_live_white_pieces(),
             live_black_pieces: Board::default_live_black_pieces(),
@@ -88,7 +92,10 @@ impl Board {
             black_king_position: Board::default_black_king_pos(),
             last_move_color: PieceColor::BLACK,
             played_moves: Vec::new(),
-        }
+            board_state_hashes: HashMap::new(),
+        };
+        board.add_state_hash();
+        board
     }
 
     fn default_live_white_pieces() -> Vec<AnyPiece> {
@@ -478,6 +485,32 @@ impl Board {
                 None,
             )),
         };
+
+        self.add_state_hash();
+    }
+
+    pub fn add_state_hash(&mut self) {
+        self.live_white_pieces.sort();
+        self.live_black_pieces.sort();
+        let mut hasher = DefaultHasher::new();
+        self.live_black_pieces.hash(&mut hasher);
+        self.live_white_pieces.hash(&mut hasher);
+        let hash = hasher.finish();
+        if self.board_state_hashes.contains_key(&hash) {
+            let current_count = self.board_state_hashes.get_mut(&hash).unwrap().clone();
+            self.board_state_hashes.insert(hash, current_count + 1);
+        } else {
+            self.board_state_hashes.insert(hash, 1);
+        }
+    }
+
+    pub fn get_current_hash(&mut self) -> u64 {
+        self.live_white_pieces.sort();
+        self.live_black_pieces.sort();
+        let mut hasher = DefaultHasher::new();
+        self.live_black_pieces.hash(&mut hasher);
+        self.live_white_pieces.hash(&mut hasher);
+        hasher.finish()
     }
 
     // @TODO this would be another prime function for adding Result to

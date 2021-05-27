@@ -52,31 +52,10 @@ pub fn is_board_stale_mate(board: &mut Board) -> bool {
 }
 
 pub fn is_board_draw_by_repetition(board: &mut Board) -> bool {
-    // I recognize that this is a terrible way to do it and will need a better way in the future.
-    // If the false positive count is low this is fine for now.
-    if board.played_moves.len() >= 12 {
-        let last_twelve =
-            &board.played_moves[0 + board.played_moves.len() - 12..board.played_moves.len()];
-        let a = last_twelve.get(0).unwrap().get_ending_pos();
-        let c = last_twelve.get(1).unwrap().get_ending_pos();
-        let b = last_twelve.get(2).unwrap().get_ending_pos();
-        let d = last_twelve.get(3).unwrap().get_ending_pos();
-        if a == last_twelve.get(4).unwrap().get_ending_pos()
-            && a == last_twelve.get(8).unwrap().get_ending_pos()
-        {
-            if b == last_twelve.get(6).unwrap().get_ending_pos()
-                && b == last_twelve.get(10).unwrap().get_ending_pos()
-            {
-                if c == last_twelve.get(5).unwrap().get_ending_pos()
-                    && c == last_twelve.get(9).unwrap().get_ending_pos()
-                {
-                    if d == last_twelve.get(7).unwrap().get_ending_pos()
-                        && d == last_twelve.get(11).unwrap().get_ending_pos()
-                    {
-                        return true;
-                    }
-                }
-            }
+    let current_hash = board.get_current_hash();
+    if board.board_state_hashes.contains_key(&current_hash) {
+        if *board.board_state_hashes.get(&current_hash).unwrap() >= 3 {
+            return true;
         }
     }
     false
