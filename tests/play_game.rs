@@ -1,4 +1,5 @@
 use chess::board;
+use chess::game::is_board_stale_mate;
 use chess::parser;
 use chess::parser::MoveTypes;
 use chess::piece_types::PieceColor;
@@ -427,4 +428,58 @@ fn test_en_passant_black_one_move_late() {
             };
         }
     };
+}
+
+#[test]
+fn test_stalemate_game() {
+    // https://lichess.org/c4s8ru73
+
+    let mut board = board::Board::new();
+
+    let parsed_moves = parser::parse_game_moves(String::from("1. d4 d5 2. c4 Nf6 3. Nf3 Bg4 4. Nbd2 Bxf3 5. Nxf3 e6 6. g3 Bb4+ 7. Bd2 a5 8. Bg2 dxc4 9. Qa4+ Nc6 10. Bxb4 axb4 11. Qb5 O-O 12. O-O Nxd4 13. Qxb4 Nxe2+ 14. Kh1 Nd5 15. Qxc4 Nxg3+ 16. fxg3 Qd6 17. Rad1 f5 18. Nd4 Ra5 19. Nxe6 Qxe6 20. Bxd5 Rxd5 21. Qxd5 Qxd5+ 22. Rxd5 g5 23. Rd7 f4 24. Rxc7 f3 25. Rxb7 g4 26. a4 Re8 27. b4 Re2 28. a5 f2 29. Kg2 h5 30. Rxf2 Re8 31. Ra2 Ra8 32. a6 Kf8 33. a7 h4 34. Rb8+ Rxb8 35. axb8=Q+ Kf7 36. Ra7+ Ke6 37. Qf4 Kd5 38. Ra6 h3+ 39. Kf2 1/2-1/2"));
+    let mut count = 0;
+    for parsed_move in parsed_moves {
+        let white_move = parsed_move.1.unwrap();
+        let black_move = parsed_move.2.unwrap();
+        match white_move.move_type {
+            MoveTypes::FinalResult(_game_result) => (),
+            _ => {
+                let result = board.play_move(white_move);
+                match result {
+                    Ok(_) => assert_eq!(
+                        &board.last_move_color == &PieceColor::WHITE,
+                        true,
+                        "The expected last move color was white, but got {:?}",
+                        &board.last_move_color
+                    ),
+                    Err(move_error) => assert!(false, "Error:{:?}", move_error),
+                }
+            } // White move
+        }
+        match black_move.move_type {
+            MoveTypes::FinalResult(_game_result) => (),
+            _ => {
+                let result = board.play_move(black_move);
+                match result {
+                    Ok(_) => assert_eq!(
+                        &board.last_move_color == &PieceColor::BLACK,
+                        true,
+                        "The expected last move color was black, but got {:?}",
+                        &board.last_move_color
+                    ),
+                    Err(move_error) => assert!(false, "Error:{:?}", move_error),
+                }
+            } // Black move
+        }
+        count = count + 1;
+    }
+
+    assert_eq!(
+        is_board_stale_mate(
+            &PieceColor::opposite_color(&board.last_move_color),
+            &mut board
+        ),
+        true,
+        "Expected the board to be in stalemate"
+    );
 }

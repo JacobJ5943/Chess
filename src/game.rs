@@ -31,6 +31,9 @@ pub fn is_board_in_check(last_move: &PieceColor, board: &Board) -> bool {
 
     false
 }
+pub fn is_board_stale_mate(moving_piece_color: &PieceColor, board: &mut Board) -> bool {
+    can_any_piece_move(moving_piece_color, board)
+}
 
 pub fn is_board_check_mate(last_move: &PieceColor, board: &mut Board) -> bool {
     let opposing_king_color = match last_move {
@@ -50,16 +53,6 @@ pub fn is_board_check_mate(last_move: &PieceColor, board: &mut Board) -> bool {
 fn can_any_piece_move(piece_color: &PieceColor, game_board: &mut Board) -> bool {
     let all_possible_moves: Vec<((usize, usize), Vec<(usize, usize)>)> = match piece_color {
         PieceColor::WHITE => {
-            /*
-            let possible_moves: Vec<((usize, usize), Vec<(usize, usize)>)> = game_board
-                .live_white_pieces
-                .iter()
-                .map(|x| (x.get_pos(), x.moves_on_board()))
-                .collect();
-            possible_moves
-
-             */
-
             let mut all_movable_moves = Vec::new();
             for piece in &game_board.live_white_pieces {
                 let possible_moves = piece.moves_on_board();
@@ -306,6 +299,7 @@ pub fn play_game_cli() {
                 println!("currentQuickBoard:{:?}", game_board.position_board);
                 println!("LiveWhite:{:?}", game_board.live_white_pieces);
                 println!("LiveBlack:{:?}", game_board.live_black_pieces);
+                println!("PastMoves:{:?}", game_board.played_moves);
             } else if player_input.contains("draw") {
                 if get_player_draw_response() {
                     // End the game with a score of draw
