@@ -33,21 +33,12 @@ pub fn is_board_in_check(last_move: &PieceColor, board: &Board) -> bool {
 }
 
 pub fn is_board_stale_mate(board: &mut Board) -> bool {
-    println!("Chekcing stalemate");
-
-    println!("currentQuickBoard:{:?}", board.position_board);
-    println!("LiveWhite:{:?}", board.live_white_pieces);
-    println!("LiveBlack:{:?}", board.live_black_pieces);
-    println!("PastMoves:{:?}", board.played_moves);
     if !can_any_piece_move(&PieceColor::WHITE, board) {
-        println!("White can move");
         return true;
     }
     if !can_any_piece_move(&PieceColor::BLACK, board) {
-        println!("Black can move");
         return true;
     }
-    println!("returning that false");
     false
 }
 
@@ -137,11 +128,6 @@ fn can_any_piece_move(piece_color: &PieceColor, game_board: &mut Board) -> bool 
                 &piece_color.clone(),
                 game_board,
             ) {
-                println!(
-                    "PIECE{:?} to {:?} is not checkmate?",
-                    (piece_pos_x, piece_pos_y),
-                    possible_move
-                );
                 return true;
             }
         }

@@ -3,7 +3,7 @@ use super::PieceMove;
 use crate::pieces::movement;
 use crate::pieces::{check_if_piece_on_location, coord_on_board};
 
-#[derive(Copy, Clone, Debug)]
+#[derive(Copy, Clone, Debug, Hash, Eq, PartialEq)]
 pub struct Rook {
     pos_x: usize,
     pos_y: usize,

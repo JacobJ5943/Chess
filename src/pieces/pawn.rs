@@ -3,7 +3,7 @@ use crate::pieces::coord_on_board;
 use crate::pieces::PieceMove;
 use std::cmp::max;
 
-#[derive(Copy, Clone, Debug)]
+#[derive(Copy, Clone, Debug, Hash, Eq, PartialEq)]
 pub struct Pawn {
     pos_x: usize,
     pos_y: usize,
@@ -83,6 +83,16 @@ impl PieceMove for Pawn {
             {
                 return false;
             }
+            let piece = quick_board
+                .get(x_coord)
+                .unwrap()
+                .get(usize::max(y_coord, self.pos_y) - 1)
+                .unwrap();
+            match piece {
+                QuickPiece::PIECE(_) => return false,
+                QuickPiece::KING(_) => return false,
+                QuickPiece::EMPTY => (),
+            };
         }
         if y_delta > 2 {
             return false;

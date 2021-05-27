@@ -14,6 +14,7 @@ use crate::pieces::knight::Knight;
 use crate::pieces::pawn::Pawn;
 use crate::pieces::queen::Queen;
 use crate::pieces::rook::Rook;
+use std::cmp::Ordering;
 
 // Calling it PieceMove because I don't want to bother with if Move is already a trait or something
 // silly
@@ -29,7 +30,7 @@ pub trait PieceMove {
     fn set_pos(&mut self, x_coord: usize, y_coord: usize);
 }
 
-#[derive(Copy, Clone, Debug)]
+#[derive(Copy, Clone, Debug, Hash, Eq, PartialEq)]
 pub enum AnyPiece {
     King(King),
     Queen(Queen),
@@ -37,6 +38,17 @@ pub enum AnyPiece {
     Knight(Knight),
     Rook(Rook),
     Pawn(Pawn),
+}
+
+impl Ord for AnyPiece {
+    fn cmp(&self, other: &Self) -> Ordering {
+        self.get_pos().cmp(&other.get_pos())
+    }
+}
+impl PartialOrd for AnyPiece {
+    fn partial_cmp(&self, other: &Self) -> Option<Ordering> {
+        Some(self.cmp(other))
+    }
 }
 
 impl AnyPiece {
