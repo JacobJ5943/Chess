@@ -37,7 +37,7 @@ impl Error for MoveError {
     }
 }
 
-#[derive(Debug)]
+#[derive(Debug, PartialEq)]
 pub struct PlayedMove {
     piece_string: String,
     starting_position: (usize, usize),
@@ -61,6 +61,10 @@ impl PlayedMove {
             moving_color,
             promotion_piece,
         }
+    }
+
+    pub fn get_ending_pos(&self) -> (usize, usize) {
+        self.end_position
     }
 }
 
@@ -501,17 +505,19 @@ impl Board {
     }
 
     // This will return () as long as this is not a pawn attempting and failing to make an en passant
-    fn valid_en_passant(
+    pub fn valid_en_passant(
         &self,
-        parsed_move: &ParsedMove,
+        //parsed_move: &ParsedMove,
+        moving_piece_symbol: &str,
+        start_x: usize,
+        _start_y: usize,
         end_x: usize,
         end_y: usize,
     ) -> Result<(), MoveError> {
-        if let MoveTypes::Take = parsed_move.move_type {
-            if let "P" = parsed_move.piece_char.as_str() {
-                if let QuickPiece::EMPTY =
-                    self.position_board.get(end_x).unwrap().get(end_y).unwrap()
-                {
+        if let "P" = moving_piece_symbol {
+            if let QuickPiece::EMPTY = self.position_board.get(end_x).unwrap().get(end_y).unwrap() {
+                let delta_x = usize::max(start_x, end_x) - usize::min(start_x, end_x);
+                if delta_x == 1 {
                     if end_y == 5 || end_y == 2 {
                         if let Some(last_played_move) = self.played_moves.last() {
                             if let "P" = last_played_move.piece_string.as_str() {
@@ -555,6 +561,8 @@ impl Board {
                             "Pawn tried to take to empty location without valid en passant.",
                         ));
                     }
+                } else if delta_x == 0 {
+                    return Ok(());
                 }
             }
         }
@@ -596,7 +604,13 @@ impl Board {
                     self,
                 ) {
                     // If this is an invalid en passant it will return an error  which ? will then bubble up and return here
-                    self.valid_en_passant(&parsed_move, end_x, end_y)?;
+                    self.valid_en_passant(
+                        &parsed_move.piece_char,
+                        moving_x,
+                        moving_y,
+                        end_x,
+                        end_y,
+                    )?;
 
                     if let MoveTypes::Promote(piece_promote) = parsed_move.move_type {
                         self.move_piece(

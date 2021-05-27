@@ -5,5 +5,6 @@ pub mod piece_types;
 pub mod pieces;
 
 fn main() {
-    game::play_game_cli();
+    println!("{}", String::from("P").as_str() == "P")
+    // game::play_game_cli();
 }
