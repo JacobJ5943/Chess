@@ -840,6 +840,7 @@ impl Board {
         can_castle
     }
 
+    // This function will also castle the rook
     fn castle_king(&mut self, king_color: &PieceColor, king_x_end: usize) -> bool {
         if self.can_castle_king(king_color, king_x_end) {
             // Move the king to king_x_end
@@ -857,9 +858,9 @@ impl Board {
                 None,
             );
             if king_x_end == 6 {
-                self.move_piece(String::from("K"), 7, king_y, king_color, 5, king_y, None);
+                self.move_piece(String::from("R"), 7, king_y, king_color, 5, king_y, None);
             } else {
-                self.move_piece(String::from("K"), 0, king_y, king_color, 3, king_y, None);
+                self.move_piece(String::from("R"), 0, king_y, king_color, 3, king_y, None);
             }
             true
         } else {
