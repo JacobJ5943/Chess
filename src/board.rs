@@ -82,6 +82,12 @@ pub struct Board {
     pub board_state_hashes: HashMap<u64, usize>,
 }
 
+impl Default for Board {
+    fn default() -> Self {
+        Board::new()
+    }
+}
+
 impl Board {
     pub fn new() -> Board {
         let mut board = Board {

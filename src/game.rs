@@ -1,8 +1,10 @@
+use crate::gui_runner::GuiRunner;
 use crate::board::{Board, MoveError};
 use crate::parser::parse_move;
 use crate::piece_types::{PieceColor, QuickPiece};
 use crate::pieces::{AnyPiece, PieceMove};
 use std::io;
+use iced::{Settings, Sandbox};
 
 // This function only checks the color opposing the last move.  This is because one cannot make a
 // move that would put the player in check.  That means for this function to run it has already
@@ -301,7 +303,7 @@ fn get_player_draw_response() -> bool {
 }
 
 // @TODO figure out how to maintain the parsed error
-fn player_move(game_board: &mut Board, player_input: &String) -> Result<(), MoveError> {
+pub fn player_move(game_board: &mut Board, player_input: &String) -> Result<(), MoveError> {
     let parsed_move = parse_move(player_input.as_str());
     // play_move should be Result<(), MoveError>
     // MoveError should replace all the panics.  It should also include if one would be in check if they moved.
@@ -364,4 +366,29 @@ pub fn play_game_cli() {
             game_continue_status = false;
         }
     }
+}
+
+pub fn play_game_gui() {
+    GuiRunner::run(Settings::default());
+}
+
+pub fn file_name_from_piece(any_piece: &AnyPiece, piece_color: &PieceColor) -> String{
+    String::from(match piece_color {
+        PieceColor::WHITE => match any_piece {
+            AnyPiece::King(_) => {"GreenKing.png"}
+            AnyPiece::Queen(_) => {"GreenQueen.png"}
+            AnyPiece::Bishop(_) => {"GreenBishop.png"}
+            AnyPiece::Knight(_) => {"GreenKnight.png"}
+            AnyPiece::Rook(_) => {"GreenRook.png"}
+            AnyPiece::Pawn(_) => {"GreenPawn.png"}
+        }
+        PieceColor::BLACK => match any_piece {
+            AnyPiece::King(_) => {"BlackKing.png"}
+            AnyPiece::Queen(_) => {"BlackQueen.png"}
+            AnyPiece::Bishop(_) => {"BlackBishop.png"}
+            AnyPiece::Knight(_) => {"BlackKnight.png"}
+            AnyPiece::Rook(_) => {"BlackRook.png"}
+            AnyPiece::Pawn(_) => {"BlackPawn.png"}
+        }
+    })
 }
