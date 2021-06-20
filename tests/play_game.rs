@@ -1,8 +1,9 @@
 use chess::board;
 use chess::game::{is_board_check_mate, is_board_draw_by_repetition, is_board_stale_mate};
 use chess::parser;
-use chess::parser::MoveTypes;
+use chess::parser::{MoveTypes, ParsedMove};
 use chess::piece_types::PieceColor;
+use chess::board::MoveError;
 
 #[test]
 fn test_play_game_1() {
@@ -819,4 +820,48 @@ fn more_check_mate_tests_2() {
         true,
         "Expected the board to be in checkmate"
     );
+}
+
+#[test]
+fn test_fools_mate() {
+    let mut board = board::Board::new();
+
+    let parsed_moves = parser::parse_game_moves(String::from("1. f3 e5 1. g4 Qh4#"));
+
+
+    for ((white_coords, black_coords), parsed_move) in [(((5,2), (5,1)),
+                         ((4,4),(4,6))),
+        (((6,3), (6,1)),
+         ((7,3), (4,0)))].iter().zip(parsed_moves) {
+        let white_move = parsed_move.1.unwrap();
+        let black_move = parsed_move.2.unwrap();
+
+        match board.play_move(white_move) {
+            Ok(_) => {
+                if let None = board.find_piece_color(white_coords.0.0, white_coords.0.1, &PieceColor::WHITE) {
+                    assert!(false, "There was not a white piece on {:?}", white_coords.0.1);
+                }
+
+                if let Some(_) = board.find_piece_color(white_coords.1.0, white_coords.1.1, &PieceColor::WHITE) {
+                    assert!(false, "The wrong piece moved to {:?} from {:?}", white_coords.0, white_coords.1)
+                }
+            }
+            Err(error) => {assert!(false, "There was an error playing white move:{:?}", error)}
+        }
+
+        match board.play_move(black_move) {
+            Ok(_) => {
+                if let None = board.find_piece_color(black_coords.0.0, black_coords.0.1, &PieceColor::BLACK) {
+                    assert!(false, "There was not a black piece on {:?}", black_coords.0.1);
+                }
+
+                if let Some(_) = board.find_piece_color(black_coords.1.0, black_coords.1.1, &PieceColor::BLACK) {
+                    assert!(false, "The wrong piece moved to {:?} from {:?}", black_coords.0, black_coords.1)
+                }
+            }
+            Err(error) => {assert!(false, "There was an error playing black move:{:?}", error)}
+        }
+
+    }
+
 }

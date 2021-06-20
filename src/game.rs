@@ -1,10 +1,10 @@
-use crate::gui_runner::GuiRunner;
 use crate::board::{Board, MoveError};
+use crate::gui_runner::GuiRunner;
 use crate::parser::parse_move;
 use crate::piece_types::{PieceColor, QuickPiece};
 use crate::pieces::{AnyPiece, PieceMove};
+use iced::{Sandbox, Settings};
 use std::io;
-use iced::{Settings, Sandbox};
 
 // This function only checks the color opposing the last move.  This is because one cannot make a
 // move that would put the player in check.  That means for this function to run it has already
@@ -372,23 +372,23 @@ pub fn play_game_gui() {
     GuiRunner::run(Settings::default());
 }
 
-pub fn file_name_from_piece(any_piece: &AnyPiece, piece_color: &PieceColor) -> String{
+pub fn file_name_from_piece(any_piece: &AnyPiece, piece_color: &PieceColor) -> String {
     String::from(match piece_color {
         PieceColor::WHITE => match any_piece {
-            AnyPiece::King(_) => {"GreenKing.png"}
-            AnyPiece::Queen(_) => {"GreenQueen.png"}
-            AnyPiece::Bishop(_) => {"GreenBishop.png"}
-            AnyPiece::Knight(_) => {"GreenKnight.png"}
-            AnyPiece::Rook(_) => {"GreenRook.png"}
-            AnyPiece::Pawn(_) => {"GreenPawn.png"}
-        }
+            AnyPiece::King(_) => "GreenKing.png",
+            AnyPiece::Queen(_) => "GreenQueen.png",
+            AnyPiece::Bishop(_) => "GreenBishop.png",
+            AnyPiece::Knight(_) => "GreenKnight.png",
+            AnyPiece::Rook(_) => "GreenRook.png",
+            AnyPiece::Pawn(_) => "GreenPawn.png",
+        },
         PieceColor::BLACK => match any_piece {
-            AnyPiece::King(_) => {"BlackKing.png"}
-            AnyPiece::Queen(_) => {"BlackQueen.png"}
-            AnyPiece::Bishop(_) => {"BlackBishop.png"}
-            AnyPiece::Knight(_) => {"BlackKnight.png"}
-            AnyPiece::Rook(_) => {"BlackRook.png"}
-            AnyPiece::Pawn(_) => {"BlackPawn.png"}
-        }
+            AnyPiece::King(_) => "BlackKing.png",
+            AnyPiece::Queen(_) => "BlackQueen.png",
+            AnyPiece::Bishop(_) => "BlackBishop.png",
+            AnyPiece::Knight(_) => "BlackKnight.png",
+            AnyPiece::Rook(_) => "BlackRook.png",
+            AnyPiece::Pawn(_) => "BlackPawn.png",
+        },
     })
 }
