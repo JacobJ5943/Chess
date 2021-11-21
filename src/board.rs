@@ -475,7 +475,7 @@ impl Board {
         let moving_piece = self
             .find_piece_color(moving_x, moving_y, moving_piece_color)
             .unwrap();
-        &moving_piece.set_pos(end_x, end_y);
+        let _ = &moving_piece.set_pos(end_x, end_y);
 
         match moving_piece {
             AnyPiece::King(_king) => {

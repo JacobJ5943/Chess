@@ -291,7 +291,7 @@ pub fn parse_coordinate(coordinate: &str) -> usize {
         "6" => 5,
         "7" => 6,
         "8" => 7,
-        _ => panic!(format!("Could not parse coordinate {}", coordinate)),
+        _ => panic!("Could not parse coordinate {}", coordinate),
     }
 }
 

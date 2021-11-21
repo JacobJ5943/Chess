@@ -1,9 +1,9 @@
 use chess::board;
 use chess::game::{is_board_check_mate, is_board_draw_by_repetition, is_board_stale_mate};
 use chess::parser;
-use chess::parser::{MoveTypes, ParsedMove};
+use chess::parser::{MoveTypes};
 use chess::piece_types::PieceColor;
-use chess::board::MoveError;
+
 
 #[test]
 fn test_play_game_1() {

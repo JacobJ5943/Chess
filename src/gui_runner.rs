@@ -1,17 +1,16 @@
-use iced::image::viewer::Renderer;
+
 use iced::{
-    button, text_input, Align, Button, Column, Container, Element, Image, Length, Row, Sandbox,
-    Settings, Text, TextInput,
+    button, text_input, Column, Container, Element, Image, Length, Row, Sandbox, Text, TextInput,
 };
 
 use crate::board::Board;
 use crate::game;
 use crate::piece_types::PieceColor;
 use crate::pieces::PieceMove;
-use iced::button::State;
-use std::borrow::Borrow;
+
+
 use std::collections::HashMap;
-use Message::{DecrementPressed, IncrementPressed, InputChanged, PlayMove};
+use Message::{InputChanged, PlayMove};
 
 #[derive(Default)]
 pub struct GuiRunner {
@@ -736,7 +735,7 @@ impl Sandbox for GuiRunner {
                             // This is where we would change to the next screen if I had one.
                             } else {
                                 self.text_value = "".to_string();
-                                self.wrong_move_string == "".to_string();
+                                let _ = self.wrong_move_string == "".to_string();
                             }
                         } // Do valid move things,
                         Err(error) => self.wrong_move_string = error.to_string(),
@@ -747,8 +746,8 @@ impl Sandbox for GuiRunner {
     }
 
     fn view(&mut self) -> Element<Message> {
-        let mut row = GuiRunner::create_container_from_board(&self.board);
-        let text_input = TextInput::new(
+        let row = GuiRunner::create_container_from_board(&self.board);
+        let _text_input = TextInput::new(
             &mut self.text_state,
             "Type something to continue...",
             &mut self.text_value,
@@ -757,7 +756,7 @@ impl Sandbox for GuiRunner {
 
         let container = Container::new(row).width(Length::Fill).height(Length::Fill);
 
-        let mut col = Column::new()
+        let col = Column::new()
             .push(container)
             .push(Text::new(format!(
                 "CurrentMoveColor:{:?}",
