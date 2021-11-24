@@ -9,7 +9,7 @@ pub fn check_if_pieces_in_path_diag(
     y_start: usize,
     x_dest: usize,
     y_dest: usize,
-    quick_board: &Vec<Vec<QuickPiece>>,
+    quick_board: &[Vec<QuickPiece>],
 ) -> bool {
     let mut x_step: isize = 1;
     let mut y_step: isize = 1;
@@ -52,7 +52,7 @@ pub fn is_move_diagonal(
     y_start: usize,
     x_coord: usize,
     y_coord: usize,
-    _quick_board: &Vec<Vec<QuickPiece>>,
+    _quick_board: &[Vec<QuickPiece>],
 ) -> bool {
     let x_delta = usize::max(x_coord, x_start) - usize::min(x_coord, x_start);
     let y_delta = usize::max(y_coord, y_start) - usize::min(y_coord, y_start);
@@ -69,7 +69,7 @@ pub fn is_move_horizontal_vertical(
     y_start: usize,
     x_coord: usize,
     y_coord: usize,
-    _quick_board: &Vec<Vec<QuickPiece>>,
+    _quick_board: &[Vec<QuickPiece>],
 ) -> bool {
     let x_delta = usize::max(x_coord, x_start) - usize::min(x_coord, x_start);
     let y_delta = usize::max(y_coord, y_start) - usize::min(y_coord, y_start);
@@ -86,7 +86,7 @@ pub fn check_if_pieces_in_path_horizontal_vertical(
     y_start: usize,
     x_coord: usize,
     y_coord: usize,
-    quick_board: &Vec<Vec<QuickPiece>>,
+    quick_board: &[Vec<QuickPiece>],
 ) -> bool {
     let mut x_step: isize = 1;
     let mut y_step: isize = 1;

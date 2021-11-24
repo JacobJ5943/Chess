@@ -149,12 +149,12 @@ impl Board {
     fn is_correct_piece_type(piece: &AnyPiece, compare_type: &str) -> bool {
         let compare_type = String::from(compare_type);
         match piece {
-            AnyPiece::Knight(_) => compare_type == String::from("N"),
-            AnyPiece::King(_) => compare_type == String::from("K"),
-            AnyPiece::Queen(_) => compare_type == String::from("Q"),
-            AnyPiece::Rook(_) => compare_type == String::from("R"),
-            AnyPiece::Pawn(_) => compare_type == String::from("P"),
-            AnyPiece::Bishop(_) => compare_type == String::from("B"),
+            AnyPiece::Knight(_) => compare_type == "N",
+            AnyPiece::King(_) => compare_type == "K",
+            AnyPiece::Queen(_) => compare_type == "Q",
+            AnyPiece::Rook(_) => compare_type == "R",
+            AnyPiece::Pawn(_) => compare_type == "P",
+            AnyPiece::Bishop(_) => compare_type == "B",
         }
     }
 
@@ -176,42 +176,41 @@ impl Board {
             // This move must be valid.  A pawn can only move diagonal in a take or en passant
             if piece.can_move(end_x, end_y, &self.position_board)
                 && Board::is_correct_piece_type(piece, &parsed_move.piece_char)
+                && Board::is_correct_moving_piece(parsed_move, piece)
             {
-                if Board::is_correct_moving_piece(parsed_move, piece) {
-                    if &String::from("P") == &parsed_move.piece_char {
-                        // @TODO this could probably be a function
-                        let delta_x = usize::max(end_x, piece.get_pos().0)
-                            - usize::min(end_x, piece.get_pos().0);
-                        match &parsed_move.move_type {
-                            MoveTypes::Take => {
-                                if delta_x == 1 {
-                                    return_value = Some(piece);
-                                }
+                if "P" == parsed_move.piece_char {
+                    // @TODO this could probably be a function
+                    let delta_x =
+                        usize::max(end_x, piece.get_pos().0) - usize::min(end_x, piece.get_pos().0);
+                    match &parsed_move.move_type {
+                        MoveTypes::Take => {
+                            if delta_x == 1 {
+                                return_value = Some(piece);
                             }
-                            MoveTypes::Move => {
-                                if delta_x == 0 {
-                                    return_value = Some(piece);
-                                }
+                        }
+                        MoveTypes::Move => {
+                            if delta_x == 0 {
+                                return_value = Some(piece);
                             }
-                            MoveTypes::Promote(_) => {
-                                match self.position_board.get(end_x).unwrap().get(end_y).unwrap() {
-                                    QuickPiece::EMPTY => {
-                                        if delta_x == 0 {
-                                            return_value = Some(piece);
-                                        }
+                        }
+                        MoveTypes::Promote(_) => {
+                            match self.position_board.get(end_x).unwrap().get(end_y).unwrap() {
+                                QuickPiece::EMPTY => {
+                                    if delta_x == 0 {
+                                        return_value = Some(piece);
                                     }
-                                    _ => {
-                                        if delta_x == 1 {
-                                            return_value = Some(piece);
-                                        }
+                                }
+                                _ => {
+                                    if delta_x == 1 {
+                                        return_value = Some(piece);
                                     }
                                 }
                             }
-                            _ => (),
-                        };
-                    } else {
-                        return_value = Some(piece);
-                    }
+                        }
+                        _ => (),
+                    };
+                } else {
+                    return_value = Some(piece);
                 }
             }
         }
@@ -446,8 +445,8 @@ impl Board {
         {
             if result {
                 let last_move = self.played_moves.last_mut().unwrap();
-                let last_move_color = last_move.moving_color.clone();
-                let last_move_end_pos = last_move.end_position.clone();
+                let last_move_color = last_move.moving_color;
+                let last_move_end_pos = last_move.end_position;
                 println!("removing the piece");
                 self.remove_piece_color(last_move_end_pos.0, last_move_end_pos.1, &last_move_color);
 
@@ -502,14 +501,14 @@ impl Board {
                 piece_symbol,
                 (moving_x, moving_y),
                 (end_x, end_y),
-                moving_piece_color.clone(),
+                *moving_piece_color,
                 Some(String::from(promotion_piece)),
             )),
             None => self.played_moves.push(PlayedMove::new(
                 piece_symbol,
                 (moving_x, moving_y),
                 (end_x, end_y),
-                moving_piece_color.clone(),
+                *moving_piece_color,
                 None,
             )),
         };
@@ -525,7 +524,7 @@ impl Board {
         self.live_white_pieces.hash(&mut hasher);
         let hash = hasher.finish();
         if self.board_state_hashes.contains_key(&hash) {
-            let current_count = self.board_state_hashes.get_mut(&hash).unwrap().clone();
+            let current_count = *self.board_state_hashes.get_mut(&hash).unwrap();
             self.board_state_hashes.insert(hash, current_count + 1);
         } else {
             self.board_state_hashes.insert(hash, 1);
@@ -552,10 +551,10 @@ impl Board {
         // first remove the pawn that is at that location
         self.remove_piece_color(x_coord, y_coord, pawn_color);
         let promoted_piece = match promotion_piece {
-            "N" => AnyPiece::Knight(Knight::new(x_coord, y_coord, pawn_color.clone())),
-            "Q" => AnyPiece::Queen(Queen::new(x_coord, y_coord, pawn_color.clone())),
-            "B" => AnyPiece::Bishop(Bishop::new(x_coord, y_coord, pawn_color.clone())),
-            "R" => AnyPiece::Rook(Rook::new(x_coord, y_coord, pawn_color.clone())),
+            "N" => AnyPiece::Knight(Knight::new(x_coord, y_coord, *pawn_color)),
+            "Q" => AnyPiece::Queen(Queen::new(x_coord, y_coord, *pawn_color)),
+            "B" => AnyPiece::Bishop(Bishop::new(x_coord, y_coord, *pawn_color)),
+            "R" => AnyPiece::Rook(Rook::new(x_coord, y_coord, *pawn_color)),
             _ => panic!("AAAAAAAAAAAAAA in promoting pawn "),
         };
 
@@ -730,11 +729,10 @@ impl Board {
         };
 
         let king_has_moved = match self.find_piece_color(king_coords.0, king_coords.1, king_color) {
-            Some(king) => match king {
-                AnyPiece::King(king) => king.get_has_moved(),
-                _ => panic!("This should always be a king"),
+            Some(AnyPiece::King(king)) =>{
+                king.get_has_moved()
             },
-            None => panic!("This should always be a king"),
+            _ => panic!("This should always be a king"),
         };
 
         if !king_has_moved {
@@ -743,11 +741,10 @@ impl Board {
                 6 => {
                     let rook = self.find_piece_color(7, king_coords.1, king_color);
                     let rook_has_not_moved = match rook {
-                        Some(rook) => match rook {
-                            AnyPiece::Rook(rook) => !rook.get_has_moved(),
-                            _ => false,
+                        Some(AnyPiece::Rook(rook)) => {
+                            !rook.get_has_moved()
                         },
-                        None => false,
+                        _ => false,
                     };
                     let no_pieces_in_path = self
                         .position_board
@@ -769,11 +766,10 @@ impl Board {
                 2 => {
                     let rook = self.find_piece_color(0, king_coords.1, king_color);
                     let rook_has_not_moved = match rook {
-                        Some(rook) => match rook {
-                            AnyPiece::Rook(rook) => !rook.get_has_moved(),
-                            _ => false,
+                        Some(AnyPiece::Rook(rook)) => {
+                !rook.get_has_moved()
                         },
-                        None => false,
+                        _ => false,
                     };
                     let no_pieces_in_path = self
                         .position_board

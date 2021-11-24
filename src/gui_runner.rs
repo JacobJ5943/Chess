@@ -1,13 +1,9 @@
-
-use iced::{
-    button, text_input, Column, Container, Element, Image, Length, Row, Sandbox, Text, TextInput,
-};
+use iced::{text_input, Column, Container, Element, Image, Length, Row, Sandbox, Text, TextInput};
 
 use crate::board::Board;
 use crate::game;
 use crate::piece_types::PieceColor;
 use crate::pieces::PieceMove;
-
 
 use std::collections::HashMap;
 use Message::{InputChanged, PlayMove};
@@ -20,19 +16,17 @@ pub struct GuiRunner {
     text_value: String,
     board: Board,
     value: i32,
-    increment_button: button::State,
-    decrement_button: button::State,
 }
 
 impl GuiRunner {
-    pub fn create_container_from_board<'a>(board: &Board) -> Row<Message> {
+    pub fn create_container_from_board(board: &Board) -> Row<Message> {
         let mut file_name_hash_map = HashMap::new();
         for piece in &board.live_white_pieces {
             let (x, y) = piece.get_pos();
             //println!("FILENAME:{}", game::file_name_from_piece(&piece, &PieceColor::WHITE));
             file_name_hash_map.insert(
                 (x, y),
-                game::file_name_from_piece(&piece, &PieceColor::WHITE),
+                game::file_name_from_piece(piece, &PieceColor::WHITE),
             );
         }
         for piece in &board.live_black_pieces {
@@ -40,15 +34,15 @@ impl GuiRunner {
             //println!("FILENAME:{}", game::file_name_from_piece(&piece, &PieceColor::BLACK));
             file_name_hash_map.insert(
                 (x, y),
-                game::file_name_from_piece(&piece, &PieceColor::BLACK),
+                game::file_name_from_piece(piece, &PieceColor::BLACK),
             );
         }
 
         for x in 0..8 {
             for y in 0..8 {
-                if !file_name_hash_map.contains_key(&(x, y)) {
-                    file_name_hash_map.insert((x, y), String::from("Empty.png"));
-                }
+                file_name_hash_map
+                    .entry((x, y))
+                    .or_insert_with(|| String::from("Empty.png"));
             }
         }
 
@@ -685,9 +679,10 @@ impl Sandbox for GuiRunner {
     type Message = Message;
 
     fn new() -> Self {
-        let mut return_self = Self::default();
-        return_self.game_continue = true;
-        return_self
+        GuiRunner {
+            game_continue: true,
+            ..Default::default()
+        }
     }
 
     fn title(&self) -> String {
@@ -703,11 +698,7 @@ impl Sandbox for GuiRunner {
                 self.value -= 1;
             }
             Message::InputChanged(string_value) => {
-                //self.text_value = string_value;
-                if let GuiRunner { text_value, .. } = self {
-                    *text_value = string_value;
-                }
-                //println!("we typing:{}", debug_value) ;
+                self.text_value = string_value;
             }
             Message::PlayMove => {
                 println!("This is working");
@@ -723,7 +714,7 @@ impl Sandbox for GuiRunner {
                 if string_value == &"draw".to_string() {
                     // Do draw things
                 } else {
-                    match game::player_move(&mut self.board, &string_value) {
+                    match game::player_move(&mut self.board, string_value) {
                         Ok(_) => {
                             if game::is_board_check_mate(
                                 &self.board.last_move_color.clone(),
@@ -735,7 +726,7 @@ impl Sandbox for GuiRunner {
                             // This is where we would change to the next screen if I had one.
                             } else {
                                 self.text_value = "".to_string();
-                                let _ = self.wrong_move_string == "".to_string();
+                                let _ = self.wrong_move_string.is_empty();
                             }
                         } // Do valid move things,
                         Err(error) => self.wrong_move_string = error.to_string(),
@@ -750,7 +741,7 @@ impl Sandbox for GuiRunner {
         let _text_input = TextInput::new(
             &mut self.text_state,
             "Type something to continue...",
-            &mut self.text_value,
+            &self.text_value,
             Message::InputChanged,
         );
 
@@ -762,7 +753,7 @@ impl Sandbox for GuiRunner {
                 "CurrentMoveColor:{:?}",
                 PieceColor::opposite_color(&self.board.last_move_color)
             )))
-            .push(Text::new(if self.wrong_move_string != "".to_string() {
+            .push(Text::new(if !self.wrong_move_string.is_empty() {
                 &self.wrong_move_string
             } else {
                 ""
@@ -771,7 +762,7 @@ impl Sandbox for GuiRunner {
                 TextInput::new(
                     &mut self.text_state,
                     "This is a palceholder",
-                    &mut self.text_value,
+                    &self.text_value,
                     InputChanged,
                 )
                 .on_submit(PlayMove),

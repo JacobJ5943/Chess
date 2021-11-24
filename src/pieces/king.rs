@@ -36,7 +36,7 @@ impl PieceMove for King {
         self.pos_y = y_coord;
     }
 
-    fn can_move(&self, x_coord: usize, y_coord: usize, quick_board: &Vec<Vec<QuickPiece>>) -> bool {
+    fn can_move(&self, x_coord: usize, y_coord: usize, quick_board: &[Vec<QuickPiece>]) -> bool {
         if !coord_on_board(x_coord, y_coord, quick_board) {
             return false;
         }

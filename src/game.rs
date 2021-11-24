@@ -51,10 +51,10 @@ pub fn is_board_stale_mate(board: &mut Board) -> bool {
 
 pub fn is_board_draw_by_repetition(board: &mut Board) -> bool {
     let current_hash = board.get_current_hash();
-    if board.board_state_hashes.contains_key(&current_hash) {
-        if *board.board_state_hashes.get(&current_hash).unwrap() >= 3 {
-            return true;
-        }
+    if board.board_state_hashes.contains_key(&current_hash)
+        && *board.board_state_hashes.get(&current_hash).unwrap() >= 3
+    {
+        return true;
     }
     false
 }
@@ -65,10 +65,8 @@ pub fn is_board_check_mate(last_move: &PieceColor, board: &mut Board) -> bool {
         PieceColor::BLACK => PieceColor::WHITE,
     };
 
-    if is_board_in_check(last_move, board) {
-        if !can_any_piece_move(&opposing_king_color, board) {
-            return true;
-        }
+    if is_board_in_check(last_move, board) && !can_any_piece_move(&opposing_king_color, board) {
+        return true;
     }
 
     false
@@ -83,10 +81,10 @@ fn can_any_piece_move(piece_color: &PieceColor, game_board: &mut Board) -> bool 
                 let mut movable_moves = Vec::with_capacity(possible_moves.capacity());
 
                 for (x, y) in possible_moves {
-                    if piece.can_move(x, y, &mut game_board.position_board) {
+                    if piece.can_move(x, y, &game_board.position_board) {
                         let (px, py) = piece.get_pos();
                         if let AnyPiece::Pawn(_) = piece {
-                            if let Ok(_) = game_board.valid_en_passant("P", px, py, x, y) {
+                            if game_board.valid_en_passant("P", px, py, x, y).is_ok() {
                                 movable_moves.push((x, y));
                             }
                         } else {
@@ -105,10 +103,10 @@ fn can_any_piece_move(piece_color: &PieceColor, game_board: &mut Board) -> bool 
                 let mut movable_moves = Vec::with_capacity(possible_moves.capacity());
 
                 for (x, y) in possible_moves {
-                    if piece.can_move(x, y, &mut game_board.position_board) {
+                    if piece.can_move(x, y, &game_board.position_board) {
                         let (px, py) = piece.get_pos();
                         if let AnyPiece::Pawn(_) = piece {
-                            if let Ok(_) = game_board.valid_en_passant("P", px, py, x, y) {
+                            if game_board.valid_en_passant("P", px, py, x, y).is_ok() {
                                 movable_moves.push((x, y));
                             }
                         } else {
@@ -140,7 +138,7 @@ fn can_any_piece_move(piece_color: &PieceColor, game_board: &mut Board) -> bool 
         }
     }
 
-    if game_board.can_castle_king(&piece_color, 6) || game_board.can_castle_king(&piece_color, 2) {
+    if game_board.can_castle_king(piece_color, 6) || game_board.can_castle_king(piece_color, 2) {
         return true;
     }
 
@@ -184,25 +182,21 @@ pub fn will_move_be_in_check(
     match &end_quick_piece {
         QuickPiece::KING(color) | QuickPiece::PIECE(color) => match color {
             PieceColor::WHITE => {
-                let mut index = 0;
-                for piece in &board.live_white_pieces {
+                for (index, piece) in board.live_white_pieces.iter().enumerate() {
                     if piece.get_pos() == (x_end, y_end) {
                         live_end_piece_color = Some(PieceColor::WHITE);
                         live_end_piece = Some(board.live_white_pieces.remove(index));
                         break;
                     }
-                    index = index + 1;
                 }
             }
             PieceColor::BLACK => {
-                let mut index = 0;
-                for piece in &board.live_black_pieces {
+                for (index, piece) in board.live_black_pieces.iter().enumerate() {
                     if piece.get_pos() == (x_end, y_end) {
                         live_end_piece_color = Some(PieceColor::BLACK);
                         live_end_piece = Some(board.live_black_pieces.remove(index));
                         break;
                     }
-                    index = index + 1;
                 }
             }
         },
@@ -218,16 +212,15 @@ pub fn will_move_be_in_check(
 
     // Set the starting_pieces location in the AnyPiece struct
     let live_moving_piece = board
-        .find_piece_color(x_start, y_start, &moving_piece_color)
+        .find_piece_color(x_start, y_start, moving_piece_color)
         .unwrap();
     live_moving_piece.set_pos(x_end, y_end);
 
-    match live_moving_piece {
-        AnyPiece::King(_) => match moving_piece_color {
+    if let AnyPiece::King(_) = live_moving_piece {
+        match moving_piece_color {
             PieceColor::WHITE => board.white_king_position = (x_end, y_end),
             PieceColor::BLACK => board.black_king_position = (x_end, y_end),
-        },
-        _ => (),
+        }
     };
 
     let opposing_king_pos = match king_color_being_checked {
@@ -249,12 +242,11 @@ pub fn will_move_be_in_check(
         .unwrap()
         .insert(y_end, end_quick_piece);
 
-    match live_end_piece {
-        Some(piece) => match live_end_piece_color.unwrap() {
+    if let Some(piece) = live_end_piece {
+        match live_end_piece_color.unwrap() {
             PieceColor::WHITE => board.live_white_pieces.push(piece),
             PieceColor::BLACK => board.live_black_pieces.push(piece),
-        },
-        _ => (),
+        }
     };
 
     board
@@ -269,16 +261,15 @@ pub fn will_move_be_in_check(
         .insert(y_start, start_piece);
 
     let found_piece = board
-        .find_piece_color(x_end, y_end, &moving_piece_color)
+        .find_piece_color(x_end, y_end, moving_piece_color)
         .unwrap();
     found_piece.set_pos(x_start, y_start);
 
-    match found_piece {
-        AnyPiece::King(king) => match moving_piece_color {
+    if let AnyPiece::King(king) = found_piece {
+        match moving_piece_color {
             PieceColor::WHITE => board.white_king_position = king.get_pos(),
             PieceColor::BLACK => board.black_king_position = king.get_pos(),
-        },
-        _ => (),
+        }
     };
     found_check
 }
@@ -299,12 +290,12 @@ fn get_player_draw_response() -> bool {
         .read_line(&mut draw_response)
         .expect("Failed to retrieve the player's move from the standard input");
 
-    draw_response.to_ascii_lowercase().contains("y")
+    draw_response.to_ascii_lowercase().contains('y')
 }
 
 // @TODO figure out how to maintain the parsed error
-pub fn player_move(game_board: &mut Board, player_input: &String) -> Result<(), MoveError> {
-    let parsed_move = parse_move(player_input.as_str());
+pub fn player_move(game_board: &mut Board, player_input: &str) -> Result<(), MoveError> {
+    let parsed_move = parse_move(player_input);
     // play_move should be Result<(), MoveError>
     // MoveError should replace all the panics.  It should also include if one would be in check if they moved.
     match parsed_move {
@@ -369,7 +360,7 @@ pub fn play_game_cli() {
 }
 
 pub fn play_game_gui() {
-    GuiRunner::run(Settings::default());
+    GuiRunner::run(Settings::default()).unwrap();
 }
 
 pub fn file_name_from_piece(any_piece: &AnyPiece, piece_color: &PieceColor) -> String {

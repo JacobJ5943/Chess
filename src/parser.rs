@@ -70,8 +70,8 @@ pub enum GameResult {
 }
 
 impl GameResult {
-    pub fn from_string(input_string: &String) -> GameResult {
-        match input_string.as_str() {
+    pub fn from_string(input_string: &str) -> GameResult {
+        match input_string {
             "1-0" => GameResult::WhiteWin,
             "0-1" => GameResult::BlackWin,
             "1/2-1/2" => GameResult::Draw,
@@ -98,7 +98,7 @@ pub fn parse_game_moves(
     let mut moves_vector = Vec::new();
     let moves: Vec<String> = game_string
         .split_whitespace()
-        .map(|x| String::from(x))
+        .map(String::from)
         .collect();
 
     for index in (0..moves.len() / 3)

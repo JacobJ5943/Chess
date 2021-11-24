@@ -31,20 +31,8 @@ impl Pawn {
     fn is_moving_forward(&self, y_coord: usize) -> bool {
         let y_delta = y_coord as isize - self.pos_y as isize;
         match self.piece_color {
-            PieceColor::WHITE => {
-                if y_delta < 1 {
-                    false
-                } else {
-                    true
-                }
-            }
-            PieceColor::BLACK => {
-                if y_delta > -1 {
-                    false
-                } else {
-                    true
-                }
-            }
+            PieceColor::WHITE => y_delta >= 1,
+            PieceColor::BLACK => y_delta <= -1,
         }
     }
 }
@@ -56,7 +44,7 @@ impl PieceMove for Pawn {
         self.pos_x = x_coord;
         self.pos_y = y_coord;
     }
-    fn can_move(&self, x_coord: usize, y_coord: usize, quick_board: &Vec<Vec<QuickPiece>>) -> bool {
+    fn can_move(&self, x_coord: usize, y_coord: usize, quick_board: &[Vec<QuickPiece>]) -> bool {
         // A pawn can move forward left, forward right, forward
         if !coord_on_board(x_coord, y_coord, quick_board) {
             return false;

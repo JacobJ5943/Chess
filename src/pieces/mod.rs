@@ -23,7 +23,7 @@ pub trait PieceMove {
         &self,
         x_coord: usize,
         y_coord: usize,
-        quick_board: &Vec<Vec<piece_types::QuickPiece>>,
+        quick_board: &[Vec<piece_types::QuickPiece>],
     ) -> bool;
     fn moves_on_board(&self) -> Vec<(usize, usize)>;
     fn get_pos(&self) -> (usize, usize);
@@ -53,7 +53,7 @@ impl PartialOrd for AnyPiece {
 
 impl AnyPiece {
     pub fn from_piece_character(
-        piece_symbol_string: &String,
+        piece_symbol_string: &str,
         x_coord: usize,
         y_coord: usize,
         new_piece_color: PieceColor,
@@ -67,7 +67,7 @@ impl AnyPiece {
 }
 
 impl PieceMove for AnyPiece {
-    fn can_move(&self, x_coord: usize, y_coord: usize, quick_board: &Vec<Vec<QuickPiece>>) -> bool {
+    fn can_move(&self, x_coord: usize, y_coord: usize, quick_board: &[Vec<QuickPiece>]) -> bool {
         match self {
             AnyPiece::King(ref king) => king.can_move(x_coord, y_coord, quick_board),
             AnyPiece::Queen(ref queen) => queen.can_move(x_coord, y_coord, quick_board),
@@ -115,7 +115,7 @@ impl PieceMove for AnyPiece {
 pub fn coord_on_board(
     x_coord: usize,
     y_coord: usize,
-    quick_board: &Vec<Vec<piece_types::QuickPiece>>,
+    quick_board: &[Vec<piece_types::QuickPiece>],
 ) -> bool {
     let y_length = match quick_board.get(0) {
         Some(row) => row.len(),
@@ -131,12 +131,16 @@ pub fn coord_on_board(
 fn check_if_piece_on_location(
     x_coord: usize,
     y_coord: usize,
-    quick_board: &Vec<Vec<piece_types::QuickPiece>>,
+    quick_board: &[Vec<piece_types::QuickPiece>],
 ) -> bool {
     let piece = quick_board.get(x_coord).unwrap().get(y_coord).unwrap();
-    match piece {
-        piece_types::QuickPiece::PIECE(_) => true,
-        piece_types::QuickPiece::KING(_) => true,
-        _ => false,
-    }
+    matches!(
+        piece,
+        piece_types::QuickPiece::PIECE(_) | piece_types::QuickPiece::KING(_)
+    )
+    //match piece {
+    //   piece_types::QuickPiece::PIECE(_) => true,
+    //  piece_types::QuickPiece::KING(_) => true,
+    // _ => false,
+    //}
 }

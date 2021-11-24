@@ -22,7 +22,7 @@ impl Bishop {
 
 impl PieceMove for Bishop {
     // @TODO All the returns feel wrong
-    fn can_move(&self, x_coord: usize, y_coord: usize, quick_board: &Vec<Vec<QuickPiece>>) -> bool {
+    fn can_move(&self, x_coord: usize, y_coord: usize, quick_board: &[Vec<QuickPiece>]) -> bool {
         if !coord_on_board(x_coord, y_coord, quick_board) {
             return false;
         }
